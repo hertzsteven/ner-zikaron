@@ -1,0 +1,1076 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ner Zikaron — Yahrzeit Companion</title>
+<meta name="description" content="Calculate yahrzeit dates, learn the halachos of the yahrzeit and visiting the kever with sources, full Tehillim and tefillos spelled out, and tzedakah for an aliyas neshama.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@400;500;700&family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy:#1c2b4d; --navy-deep:#121c35; --cream:#fbf8f1; --parchment:#f4eede;
+    --gold:#b8902e; --gold-soft:#dcbb63; --ink:#28282a; --ink-soft:#5d5a52;
+    --rule:#e0d7c2; --accent:#7c5f2c; --link:#235086; --white:#fffdf8;
+    --green:#3c6e47; --red:#9a4636;
+    --serif:'Cormorant Garamond',Georgia,'Times New Roman',serif;
+    --body:Georgia,'Times New Roman',serif;
+    --hebrew:'Frank Ruhl Libre','SBL Hebrew','Times New Roman',serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{font-family:var(--body);color:var(--ink);background:var(--cream);line-height:1.68;font-size:1.01rem}
+  .he{font-family:var(--hebrew);direction:rtl;unicode-bidi:isolate}
+  a{color:var(--link);text-underline-offset:2px}
+  h1,h2,h3,h4{font-family:var(--serif);font-weight:600;color:var(--navy)}
+
+  /* ---------- Top bar ---------- */
+  nav{background:var(--navy-deep);position:sticky;top:0;z-index:50;box-shadow:0 2px 10px rgba(0,0,0,.3)}
+  .navwrap{max-width:74rem;margin:0 auto;display:flex;align-items:center}
+  .brand{display:flex;align-items:center;gap:.5rem;color:var(--gold-soft);text-decoration:none;font-family:var(--serif);font-size:1.12rem;padding:.55rem .9rem;white-space:nowrap}
+  .brand .mini-flame{font-size:1rem}
+  nav ul{display:flex;list-style:none;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;flex:1}
+  nav ul::-webkit-scrollbar{display:none}
+  nav a.tab{display:block;padding:.72rem .8rem;color:#ddd8c9;text-decoration:none;font-size:.87rem;letter-spacing:.04em;white-space:nowrap;border-bottom:2px solid transparent}
+  nav a.tab:hover{color:var(--gold-soft)}
+  nav a.tab.active{color:var(--gold-soft);border-bottom-color:var(--gold)}
+
+  /* ---------- Hero (home only) ---------- */
+  header{display:none;background:radial-gradient(120% 140% at 50% -20%, #2a3c66 0%, var(--navy) 45%, var(--navy-deep) 100%);color:var(--cream);padding:3rem 1rem 2.6rem;text-align:center;position:relative}
+  body[data-view="home"] header{display:block}
+  header::after{content:'';position:absolute;left:0;right:0;bottom:0;height:5px;background:linear-gradient(90deg,transparent,var(--gold) 30%,var(--gold-soft) 50%,var(--gold) 70%,transparent)}
+  .candle{width:13px;height:48px;background:linear-gradient(#f7f1e0,#d6ccb0);border-radius:3px;margin:0 auto;position:relative;box-shadow:0 0 24px rgba(247,201,72,.25)}
+  .flame{width:14px;height:24px;background:radial-gradient(ellipse at 50% 78%, #fff8d8 0%, #f7c948 45%, #e8941a 82%, transparent 100%);border-radius:50% 50% 50% 50%/64% 64% 36% 36%;position:absolute;top:-26px;left:-0.5px;transform-origin:50% 100%;animation:flick 3s ease-in-out infinite;filter:drop-shadow(0 0 9px rgba(247,201,72,.55))}
+  @keyframes flick{0%,100%{transform:rotate(-2deg) scaleY(1)}30%{transform:rotate(2deg) scaleY(1.08)}60%{transform:rotate(-1deg) scaleY(.94)}80%{transform:rotate(1.5deg) scaleY(1.05)}}
+  header h1{font-size:2.5rem;color:var(--cream);margin-top:.9rem}
+  header .he-title{font-size:1.5rem;color:var(--gold-soft)}
+  header .verse{margin-top:.9rem}
+  header .verse .he{font-size:1.2rem;color:var(--gold-soft)}
+  header .verse .tr{font-size:.86rem;color:#b9c2d8;font-style:italic;display:block}
+
+  /* ---------- Views ---------- */
+  main{max-width:62rem;margin:0 auto;padding:1.4rem 1.3rem 3rem}
+  section.view{display:none}
+  section.view.on{display:block;animation:fadein .25s ease}
+  @keyframes fadein{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+  .view>h2{font-size:1.8rem;padding-bottom:.4rem;margin:0 0 .3rem;border-bottom:1px solid var(--rule);position:relative}
+  .view>h2::after{content:'';position:absolute;left:0;bottom:-1px;width:72px;height:3px;background:var(--gold)}
+  .view>h2 .he{font-size:1.2rem;color:var(--accent);margin-inline-start:.6rem;font-weight:500}
+  .lede{color:var(--ink-soft);margin:.7rem 0 1.2rem;font-size:1.02rem}
+  h3{font-size:1.2rem;margin:1.5rem 0 .5rem}
+  h4{font-size:1.03rem;margin:1rem 0 .3rem}
+  p{margin:.6rem 0}
+  ul.std,ol.std{margin:.6rem 0 .6rem 1.6rem}
+  ul.std li,ol.std li{margin:.45rem 0}
+  .kicker{font-size:.75rem;letter-spacing:.16em;text-transform:uppercase;color:var(--gold)}
+  .note{background:var(--parchment);border-inline-start:4px solid var(--gold);padding:.8rem 1.05rem;margin:1rem 0;font-size:.94rem;border-radius:0 6px 6px 0}
+  .note strong{color:var(--accent)}
+  .muted{color:var(--ink-soft);font-size:.9rem}
+  .two-col{display:grid;grid-template-columns:1fr 1fr;gap:1.2rem}
+  @media(max-width:720px){.two-col{grid-template-columns:1fr}}
+  .card{background:var(--white);border:1px solid var(--rule);border-radius:10px;padding:1.1rem 1.3rem;box-shadow:0 1px 4px rgba(40,35,20,.06)}
+  .card h3{margin-top:0}
+
+  /* source chips */
+  .src{display:inline-block;background:var(--parchment);border:1px solid var(--rule);border-radius:20px;padding:.02rem .6rem;font-size:.76rem;color:var(--accent);text-decoration:none;white-space:nowrap;margin:0 .15rem;vertical-align:8%}
+  .src:hover{border-color:var(--gold);color:var(--navy)}
+
+  /* ---------- Home dashboard ---------- */
+  .dash-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(15.5rem,1fr));gap:1rem;margin-top:1.2rem}
+  .dash-card{background:var(--white);border:1px solid var(--rule);border-radius:12px;padding:1.15rem 1.25rem;text-decoration:none;color:var(--ink);box-shadow:0 1px 4px rgba(40,35,20,.06);transition:transform .15s,box-shadow .15s,border-color .15s;display:block}
+  .dash-card:hover{transform:translateY(-3px);box-shadow:0 6px 16px rgba(40,35,20,.12);border-color:var(--gold)}
+  .dash-card .ic{font-size:1.5rem}
+  .dash-card h3{margin:.35rem 0 .2rem;font-size:1.16rem}
+  .dash-card p{margin:0;font-size:.88rem;color:var(--ink-soft)}
+  .next-widget{background:linear-gradient(135deg,var(--navy),var(--navy-deep));color:var(--cream);border-radius:12px;padding:1.2rem 1.5rem;margin-top:1.3rem;display:flex;gap:1.2rem;align-items:center;flex-wrap:wrap;justify-content:space-between}
+  .next-widget .big-days{font-family:var(--serif);font-size:2.1rem;color:var(--gold-soft);line-height:1.1}
+  .next-widget a{color:var(--gold-soft)}
+  .quickstart{display:flex;gap:.7rem;flex-wrap:wrap;margin-top:1.2rem}
+  .quickstart a{display:inline-block;padding:.5rem 1.1rem;border:1px solid var(--gold);border-radius:30px;color:var(--accent);text-decoration:none;font-size:.9rem;background:var(--white)}
+  .quickstart a:hover{background:var(--gold);color:#fff}
+
+  /* ---------- Steps / stepper ---------- */
+  .steps{counter-reset:step;margin-top:1.1rem}
+  .step{display:flex;gap:1rem;margin:.9rem 0;background:var(--white);border:1px solid var(--rule);border-radius:10px;padding:.95rem 1.15rem}
+  .step::before{counter-increment:step;content:counter(step);flex:0 0 2.1rem;height:2.1rem;border-radius:50%;background:var(--navy);color:var(--gold-soft);display:flex;align-items:center;justify-content:center;font-family:var(--serif);font-size:1.1rem;margin-top:.1rem}
+  .step h3,.step h4{margin:0 0 .2rem}
+
+  /* ---------- Chips (when to visit) ---------- */
+  .chips{display:flex;flex-wrap:wrap;gap:.55rem;margin:.7rem 0}
+  .chip{border-radius:9px;padding:.45rem .85rem;font-size:.9rem;background:var(--white);border:1px solid var(--rule)}
+  .chip.go{border-inline-start:4px solid var(--green)}
+  .chip.no{border-inline-start:4px solid var(--red)}
+  .chip .muted{display:block;font-size:.78rem}
+
+  /* ---------- Do / Don't ---------- */
+  .dodont{display:grid;grid-template-columns:1fr 1fr;gap:1.2rem;margin-top:1rem}
+  @media(max-width:720px){.dodont{grid-template-columns:1fr}}
+  .dd{background:var(--white);border:1px solid var(--rule);border-radius:10px;padding:1rem 1.2rem}
+  .dd.do{border-top:4px solid var(--green)}
+  .dd.dont{border-top:4px solid var(--red)}
+  .dd h3{margin-top:0}
+  .dd ul{list-style:none;margin:.4rem 0 0}
+  .dd li{padding:.4rem 0 .4rem 1.6rem;position:relative;border-bottom:1px dashed var(--rule)}
+  .dd li:last-child{border-bottom:none}
+  .dd.do li::before{content:'✓';position:absolute;left:0;color:var(--green);font-weight:bold}
+  .dd.dont li::before{content:'✗';position:absolute;left:0;color:var(--red);font-weight:bold}
+
+  /* ---------- Calculator ---------- */
+  .calc-box{background:var(--white);border:1px solid var(--rule);border-radius:12px;padding:1.4rem;box-shadow:0 2px 10px rgba(40,35,20,.08)}
+  .field{margin:.7rem 0}
+  .field label{display:block;font-size:.9rem;color:var(--ink-soft);margin-bottom:.25rem}
+  input[type=text],input[type=date],input[type=number],select{font:inherit;padding:.5rem .65rem;border:1px solid #c4bba6;border-radius:7px;background:var(--cream);max-width:100%}
+  input:focus,select:focus{outline:2px solid var(--gold-soft);border-color:var(--gold)}
+  .inline{display:flex;flex-wrap:wrap;gap:1rem;align-items:flex-end}
+  .checkline{display:flex;align-items:flex-start;gap:.55rem;margin:.6rem 0;font-size:.95rem}
+  .checkline input{margin-top:.32rem;accent-color:var(--navy)}
+  button{font:inherit;background:var(--navy);color:var(--cream);border:none;border-radius:7px;padding:.6rem 1.4rem;cursor:pointer;letter-spacing:.03em}
+  button:hover{background:var(--navy-deep)}
+  button.secondary{background:transparent;color:var(--navy);border:1px solid var(--navy)}
+  button.secondary:hover{background:var(--parchment)}
+  .mode-toggle{display:flex;margin-bottom:1rem;border:1px solid var(--navy);border-radius:7px;overflow:hidden;width:fit-content}
+  .mode-toggle button{border-radius:0;background:transparent;color:var(--navy);padding:.45rem 1.1rem}
+  .mode-toggle button.active{background:var(--navy);color:var(--cream)}
+  #result{margin-top:1.4rem}
+  .hdate-banner{background:var(--parchment);border:1px solid var(--rule);border-radius:10px;padding:1.05rem 1.2rem;text-align:center}
+  .hdate-banner .big{font-size:1.35rem;color:var(--navy);font-family:var(--serif)}
+  .hdate-banner .he{font-size:1.55rem;display:block;margin-top:.25rem;color:var(--accent)}
+  table.yz{width:100%;border-collapse:collapse;margin-top:1.1rem;background:var(--white);font-size:.93rem}
+  table.yz th{background:var(--navy);color:var(--cream);padding:.55rem .65rem;text-align:left;font-weight:normal}
+  table.yz td{padding:.5rem .65rem;border-bottom:1px solid var(--rule)}
+  table.yz tr.next-yz td{background:#fbf3d8;font-weight:bold}
+  .special-flag{color:#8a4b08;font-size:.88rem}
+  #savedList .saved-item{display:flex;justify-content:space-between;align-items:center;gap:1rem;padding:.65rem .2rem;border-bottom:1px solid var(--rule)}
+  #savedList .saved-item button{padding:.25rem .7rem;font-size:.84rem;background:#8d3b30}
+
+  /* ---------- Timeline ---------- */
+  .timeline{border-inline-start:3px solid var(--gold);margin:1.3rem 0 0 .6rem;padding-inline-start:1.5rem}
+  .t-item{position:relative;margin-bottom:1.5rem}
+  .t-item::before{content:'';position:absolute;inset-inline-start:-2.07rem;top:.42rem;width:13px;height:13px;border-radius:50%;background:var(--gold);border:2.5px solid var(--cream)}
+  .t-item h3{margin:0 0 .2rem}
+  .t-item .when{font-size:.76rem;color:var(--accent);letter-spacing:.13em;text-transform:uppercase}
+
+  /* ---------- Prayers ---------- */
+  .prayer{background:var(--white);border:1px solid var(--rule);border-radius:10px;padding:1.2rem 1.45rem;margin:1.1rem 0;box-shadow:0 1px 4px rgba(40,35,20,.05)}
+  .prayer .he{display:block;font-size:1.3rem;line-height:2.12;text-align:right;margin:.7rem 0}
+  .prayer .translit{font-style:italic;color:var(--ink-soft);font-size:.94rem}
+  details summary{cursor:pointer;color:var(--link);font-size:.96rem;padding:.3rem 0;user-select:none}
+  details summary:hover{color:var(--navy)}
+
+  /* ---------- Tehillim ---------- */
+  .psalm{background:var(--white);border:1px solid var(--rule);border-radius:10px;margin:.8rem 0;overflow:hidden}
+  .psalm>summary{padding:.85rem 1.25rem;font-family:var(--serif);font-size:1.16rem;color:var(--navy);background:linear-gradient(var(--white),#faf5e8);list-style:none;display:flex;justify-content:space-between;align-items:center;gap:1rem}
+  .psalm>summary::-webkit-details-marker{display:none}
+  .psalm>summary::after{content:'+';color:var(--gold);font-size:1.45rem;line-height:1}
+  .psalm[open]>summary::after{content:'–'}
+  .psalm>summary .he{font-size:1.26rem;color:var(--accent)}
+  .psalm .why{padding:.2rem 1.25rem .4rem;font-size:.89rem;color:var(--ink-soft);font-style:italic}
+  .verses{padding:.6rem 1.35rem 1.15rem}
+  .verses p{font-family:var(--hebrew);direction:rtl;text-align:right;font-size:1.28rem;line-height:2.08;margin:.32rem 0}
+  .verses .vn{color:var(--gold);font-size:.84rem;margin-inline-end:.55rem;vertical-align:8%}
+
+  /* ---------- Name keypad ---------- */
+  .keypad{display:flex;flex-wrap:wrap;gap:.4rem;direction:rtl;margin:.8rem 0}
+  .keypad button{background:var(--white);color:var(--navy);border:1px solid var(--rule);border-radius:8px;width:2.7rem;height:2.7rem;padding:0;font-family:var(--hebrew);font-size:1.35rem;box-shadow:0 1px 2px rgba(40,35,20,.08)}
+  .keypad button:hover{background:var(--parchment);border-color:var(--gold)}
+  .name-display{font-family:var(--hebrew);direction:rtl;font-size:2.05rem;min-height:3.3rem;background:var(--white);border:1px dashed var(--gold);border-radius:10px;padding:.4rem 1rem;text-align:center;letter-spacing:.15em;color:var(--navy)}
+  .stanza{background:var(--white);border:1px solid var(--rule);border-radius:10px;margin:.9rem 0;padding:1rem 1.35rem}
+  .stanza h4{display:flex;align-items:center;gap:.7rem;margin:.1rem 0 .4rem}
+  .stanza h4 .big-letter{font-family:var(--hebrew);font-size:1.85rem;color:var(--gold);line-height:1}
+  .stanza p{font-family:var(--hebrew);direction:rtl;text-align:right;font-size:1.24rem;line-height:2.02;margin:.3rem 0}
+  .stanza .vn{color:var(--gold);font-size:.8rem;margin-inline-end:.5rem}
+
+  /* ---------- Glossary ---------- */
+  dl.glossary{display:grid;grid-template-columns:max-content 1fr;gap:.45rem 1.2rem;margin-top:1rem}
+  dl.glossary dt{font-weight:bold;color:var(--navy);font-family:var(--serif);font-size:1.04rem}
+  dl.glossary dd{margin:0}
+  @media(max-width:600px){dl.glossary{grid-template-columns:1fr}dl.glossary dd{margin:0 0 .6rem .8rem}}
+
+  .ornament{text-align:center;color:var(--gold);font-size:1.2rem;margin:2rem 0 0;letter-spacing:.8em}
+  #backTop{position:fixed;bottom:1.3rem;right:1.3rem;z-index:60;display:none;border-radius:50%;width:2.9rem;height:2.9rem;padding:0;font-size:1.2rem;background:var(--navy);opacity:.88;box-shadow:0 2px 8px rgba(0,0,0,.3)}
+  footer{background:var(--navy-deep);color:#b6bdd0;text-align:center;padding:2rem 1rem;font-size:.87rem;margin-top:3rem}
+  footer a{color:var(--gold-soft)}
+  footer .he{color:var(--gold-soft)}
+
+  @media print{
+    nav,#backTop,button,.keypad,.mode-toggle,.no-print,.quickstart{display:none !important}
+    body{background:#fff;color:#000}
+    header{display:none !important}
+    .card,.prayer,.psalm,.stanza,.calc-box,.dd,.step{box-shadow:none;border-color:#999}
+    details:not([open])>*:not(summary){display:none}
+    a{color:#000;text-decoration:none}
+    .src{border-color:#999}
+  }
+  body.print-name section.view.on>*:not(#nameStanzas){display:none}
+</style>
+</head>
+<body data-view="home">
+
+<nav>
+  <div class="navwrap">
+    <a class="brand" href="#/home"><span class="mini-flame">🕯</span> Ner Zikaron</a>
+    <ul id="navtabs">
+      <li><a class="tab" href="#/guide">Begin Here</a></li>
+      <li><a class="tab" href="#/calculator">Calculator</a></li>
+      <li><a class="tab" href="#/day">The Day</a></li>
+      <li><a class="tab" href="#/year">The Year</a></li>
+      <li><a class="tab" href="#/kever">At the Kever</a></li>
+      <li><a class="tab" href="#/tefillos">Tefillos</a></li>
+      <li><a class="tab" href="#/tehillim">Tehillim</a></li>
+      <li><a class="tab" href="#/name">Their Name</a></li>
+      <li><a class="tab" href="#/tzedakah">Tzedakah</a></li>
+      <li><a class="tab" href="#/reference">Reference</a></li>
+    </ul>
+  </div>
+</nav>
+
+<header>
+  <div style="display:inline-block"><div class="flame"></div><div class="candle"></div></div>
+  <h1>Ner Zikaron</h1>
+  <div class="he-title he">נר זכרון</div>
+  <div class="verse">
+    <span class="he">נֵר יְהוָה נִשְׁמַת אָדָם</span>
+    <span class="tr">"The neshamah of man is the candle of Hashem" — Mishlei 20:27</span>
+  </div>
+</header>
+
+<main>
+
+<!-- ================= HOME ================= -->
+<section class="view" data-view="home">
+  <p class="lede" style="font-size:1.08rem">A companion for the yahrzeit of a loved one — find the date, learn what to do (with sources), daven from full texts, and bring merit to the neshama.</p>
+
+  <div id="homeNext"></div>
+
+  <div class="quickstart">
+    <a href="#/calculator">📅 Find the yahrzeit date</a>
+    <a href="#/guide">🤝 I'm new to this — show me</a>
+    <a href="#/tehillim">📖 Tehillim at the kever</a>
+  </div>
+
+  <div class="dash-grid">
+    <a class="dash-card" href="#/calculator"><span class="ic">📅</span><h3>Calculator</h3><p>The Hebrew date of passing and twenty years of yahrzeit dates — including the tricky Adar, Cheshvan and Kislev cases.</p></a>
+    <a class="dash-card" href="#/guide"><span class="ic">🤝</span><h3>Begin Here</h3><p>Six simple steps if this is your first yahrzeit — or your first in a long time. You belong here.</p></a>
+    <a class="dash-card" href="#/day"><span class="ic">🕯️</span><h3>The Yahrzeit Day</h3><p>Candle, Kaddish, leading the davening, Mishnayos, tzedakah — each with its halachic source.</p></a>
+    <a class="dash-card" href="#/year"><span class="ic">🗓️</span><h3>The Mourning Year</h3><p>From aninus through shiva, shloshim, eleven months of Kaddish, and Yizkor four times a year.</p></a>
+    <a class="dash-card" href="#/kever"><span class="ic">🪦</span><h3>At the Kever</h3><p>When to visit, the order of what to say, and clear do's and don'ts — sourced from Shulchan Aruch.</p></a>
+    <a class="dash-card" href="#/tefillos"><span class="ic">🗣️</span><h3>Tefillos</h3><p>Kaddish, Kaddish D'Rabbanan, Kel Malei (for a man and a woman), Yizkor — spelled out in full.</p></a>
+    <a class="dash-card" href="#/tehillim"><span class="ic">📖</span><h3>Tehillim</h3><p>All eight perakim said at the kever, every word with nekudos. Works offline at the cemetery.</p></a>
+    <a class="dash-card" href="#/name"><span class="ic">✍️</span><h3>Tehillim for Their Name</h3><p>Tap the Hebrew letters of the name; the exact pesukim of Tehillim 119 are assembled for you.</p></a>
+    <a class="dash-card" href="#/tzedakah"><span class="ic">💞</span><h3>Tzedakah</h3><p>Giving l'ilui nishmas — ways to give, and established organizations.</p></a>
+    <a class="dash-card" href="#/reference"><span class="ic">📚</span><h3>Reference</h3><p>Glossary of terms, further resources, and every source cited on this site.</p></a>
+  </div>
+</section>
+
+<!-- ================= GUIDE ================= -->
+<section class="view" data-view="guide">
+  <h2>New to This? Begin Here <span class="he">ברוכים הבאים</span></h2>
+  <p class="lede">Perhaps it has been years since you stepped into a shul, or no one ever showed you what to do. Know this: <strong>you belong here.</strong> The neshama is judged anew each year on this day, and <em>your</em> Kaddish, <em>your</em> perek of Tehillim, <em>your</em> few dollars of tzedakah lift it higher. Nothing is "too little."</p>
+
+  <div class="steps">
+    <div class="step"><div>
+      <h3>Find the Hebrew date</h3>
+      <p>The yahrzeit follows the Hebrew calendar — use the <a href="#/calculator">calculator</a>. A Hebrew day begins at sunset <a class="src" href="https://www.sefaria.org/Genesis.1.5" target="_blank" rel="noopener">Bereishis 1:5</a> — if the passing was after sunset, it counts as the next day.</p>
+      <details><summary>Don't know the exact date?</summary><p class="muted">Check the death certificate, the matzevah (tombstone), or ask the chevra kadisha or funeral home — they keep records. A rav can help resolve uncertainty.</p></details>
+    </div></div>
+    <div class="step"><div>
+      <h3>Get a yahrzeit candle</h3>
+      <p>A 24-hour candle costs about a dollar at any kosher grocery and most supermarkets. Light it at <strong>sunset the evening before</strong>. No bracha is said — many add: <em>"May this flame be an aliyah for the neshama of ___."</em></p>
+    </div></div>
+    <div class="step"><div>
+      <h3>Say Kaddish with a minyan</h3>
+      <p>Walk into any shul at davening times and say: <strong>"I have yahrzeit — can someone help me say Kaddish?"</strong> This request is honored everywhere; someone will read it with you, word by word. Find a minyan via <a href="https://www.godaven.com" target="_blank" rel="noopener">GoDaven</a> or a <a href="https://www.chabad.org/centers" target="_blank" rel="noopener">Chabad center</a>.</p>
+      <details><summary>Truly cannot get to a minyan?</summary><p class="muted">Arrange for Kaddish to be said on your behalf (see <a href="#/tzedakah">Tzedakah</a>) — and still light the candle, learn, and give tzedakah yourself.</p></details>
+    </div></div>
+    <div class="step"><div>
+      <h3>Learn something in their merit</h3>
+      <p>Even a few minutes counts: a perek of <a href="#/tehillim">Tehillim</a>, a mishnah, a Torah thought. The classic custom is <a href="#/day/mishnayos-card">Mishnayos for the letters of their Hebrew name</a>.</p>
+    </div></div>
+    <div class="step"><div>
+      <h3>Give tzedakah</h3>
+      <p>Any amount, to any worthy cause, with the words "<em>l'ilui nishmas</em> ___" — for the elevation of the neshama. <a href="#/tzedakah">Ideas here</a>.</p>
+    </div></div>
+    <div class="step"><div>
+      <h3>Visit the kever, if you can</h3>
+      <p>An ancient and powerful custom — the Gemara says we visit graves "so the departed will ask for mercy on our behalf" <a class="src" href="https://www.sefaria.org/Taanit.16a" target="_blank" rel="noopener">Taanis 16a</a>. Everything to say and do is in <a href="#/kever">At the Kever</a>.</p>
+    </div></div>
+  </div>
+
+  <div class="note"><strong>Don't know their Hebrew name?</strong> You'll want it for the Kel Malei and Tehillim. Look on the matzevah, the kesubah (marriage document), a bris or bas-mitzvah certificate, or ask older relatives. The form is "<em>name</em> ben (son of) / bas (daughter of) <em>father's name</em>." If it can't be recovered, a rav will tell you how to proceed — it's a common situation.</div>
+  <div class="note"><strong>If you print pages from this site:</strong> they contain pesukim and Hashem's name, and must not go in the trash — bring them to a shul's <em>geniza</em> (sheimos) box. Most people don't know this; now you do.</div>
+</section>
+
+<!-- ================= CALCULATOR ================= -->
+<section class="view" data-view="calculator">
+  <h2>Yahrzeit Calculator <span class="he">חישוב היארצייט</span></h2>
+  <p class="lede">The yahrzeit is kept on the <strong>Hebrew-calendar anniversary</strong> of the passing, so its civil date changes each year. Remember: the Jewish day begins at <em>sunset</em>.</p>
+
+  <div class="calc-box">
+    <div class="mode-toggle">
+      <button type="button" id="modeGreg" class="active" onclick="setMode('greg')">Civil (Gregorian) date</button>
+      <button type="button" id="modeHeb" onclick="setMode('heb')">Hebrew date</button>
+    </div>
+
+    <div class="field">
+      <label for="pname">Name of the niftar/nifteres (optional — for saving &amp; printing)</label>
+      <input type="text" id="pname" placeholder="e.g., Sarah bas Avraham" style="width:100%;max-width:26rem">
+    </div>
+
+    <div id="gregInputs">
+      <div class="inline">
+        <div class="field">
+          <label for="gdate">Date of passing (civil date)</label>
+          <input type="date" id="gdate">
+        </div>
+      </div>
+      <label class="checkline"><input type="checkbox" id="afterSunset"> The passing occurred <strong>after sunset</strong> (counts as the next Hebrew day)</label>
+    </div>
+
+    <div id="hebInputs" style="display:none">
+      <div class="inline">
+        <div class="field"><label for="hday">Day</label>
+          <select id="hday"></select></div>
+        <div class="field"><label for="hmonth">Hebrew month</label>
+          <select id="hmonth"></select></div>
+        <div class="field"><label for="hyear">Hebrew year</label>
+          <input type="number" id="hyear" min="5000" max="6000" value="5780" style="width:7rem"></div>
+      </div>
+    </div>
+
+    <label class="checkline"><input type="checkbox" id="delayedBurial"> Burial was delayed <strong>more than one day</strong> after the passing</label>
+
+    <div style="margin-top:1rem;display:flex;gap:.8rem;flex-wrap:wrap">
+      <button type="button" onclick="calculate()">Calculate Yahrzeit Dates</button>
+      <button type="button" class="secondary no-print" onclick="window.print()">Print</button>
+    </div>
+
+    <div id="result"></div>
+  </div>
+
+  <div id="savedBox" style="display:none">
+    <h3>My Saved Yahrzeits</h3>
+    <p class="muted">Saved privately in this browser only — nothing is sent anywhere.</p>
+    <div id="savedList"></div>
+  </div>
+
+  <div class="note"><strong>Adar in a leap year:</strong> if the passing was in a plain Adar, the Shulchan Aruch keeps the yahrzeit in Adar II and the Rema in Adar I (the prevalent Ashkenazi custom; some keep both) <a class="src" href="https://www.sefaria.org/Shulchan_Arukh%2C_Orach_Chayim.568.7" target="_blank" rel="noopener">SA &amp; Rema, OC 568:7</a>. The calculator flags these cases.</div>
+  <div class="note"><strong>Tip:</strong> add the dates to your phone's calendar so you're reminded to buy a candle and find a minyan — <a href="https://www.hebcal.com/yahrzeit" target="_blank" rel="noopener">Hebcal's yahrzeit service</a> emails reminders year after year.</div>
+</section>
+
+<!-- ================= THE DAY ================= -->
+<section class="view" data-view="day">
+  <h2>The Yahrzeit Day <span class="he">מנהגי היום</span></h2>
+  <p class="lede">On each yahrzeit the neshama is judged anew and can rise higher in Gan Eden; the mitzvos of children and loved ones are the wings on which it rises. The day runs from <strong>sunset the evening before</strong> until nightfall of the date itself.</p>
+
+  <div class="two-col">
+    <div class="card">
+      <div class="kicker">Light</div>
+      <h3>The Yahrzeit Candle</h3>
+      <p>A 24-hour flame, lit at sunset the evening before — one candle per neshama. No bracha; let it burn out on its own. The memorial light for parents is recorded by the Rema regarding Yom Kippur, the root of the custom <a class="src" href="https://www.sefaria.org/Shulchan_Arukh%2C_Orach_Chayim.610.4" target="_blank" rel="noopener">Rema, OC 610:4</a>.</p>
+      <p class="muted">On Shabbos or Yom Tov: light it <em>before</em> the Shabbos/Yom Tov candles.</p>
+    </div>
+    <div class="card">
+      <div class="kicker">Daven</div>
+      <h3>Kaddish at All Three Tefillos</h3>
+      <p>The heart of the day: Mourner's Kaddish with a minyan at Maariv, Shacharis, and Mincha <a class="src" href="https://www.sefaria.org/Shulchan_Arukh%2C_Yoreh_De'ah.376.4" target="_blank" rel="noopener">Rema, YD 376:4</a>. The power of a child's Kaddish for a parent goes back to the story of Rabbi Akiva <a class="src" href="https://www.sefaria.org/Or_Zarua" target="_blank" rel="noopener">Or Zarua II:50</a>. <a href="#/tefillos/mourners-kaddish">Full text with transliteration</a>.</p>
+    </div>
+    <div class="card">
+      <div class="kicker">Lead</div>
+      <h3>The Amud &amp; an Aliyah</h3>
+      <p>One with yahrzeit customarily leads the davening if able — at minimum Mincha, which is short <a class="src" href="https://www.sefaria.org/Shulchan_Arukh%2C_Yoreh_De'ah.376.4" target="_blank" rel="noopener">Rema, YD 376:4</a> — and receives an aliyah on the Shabbos before (and on the day itself if the Torah is read).</p>
+    </div>
+    <div class="card" id="mishnayos-card">
+      <div class="kicker">Learn</div>
+      <h3>Mishnayos for the Neshama</h3>
+      <p>The letters of <span class="he">משנה</span> rearrange to <span class="he">נשמה</span>. Learn chapters whose openings spell the Hebrew name, and the seventh perek of Mikvaos — a custom brought down from the Arizal and the Shelah and codified in later works <a class="src" href="https://halachipedia.com/index.php?title=Yahrzeit" target="_blank" rel="noopener">Gesher HaChaim 32; Halachipedia</a>. End with <a href="#/tefillos/kaddish-drabanan">Kaddish D'Rabbanan</a> if a minyan is present.</p>
+    </div>
+    <div class="card">
+      <div class="kicker">Give</div>
+      <h3>Tzedakah</h3>
+      <p>"<span class="he">וּצְדָקָה תַּצִּיל מִמָּוֶת</span> — tzedakah saves from death" <a class="src" href="https://www.sefaria.org/Proverbs.10.2" target="_blank" rel="noopener">Mishlei 10:2</a>. Many give before each of the day's three tefillos. <a href="#/tzedakah">Ways to give</a>.</p>
+    </div>
+    <div class="card">
+      <div class="kicker">Gather</div>
+      <h3>A Fast — or a Tikkun</h3>
+      <p>The Shulchan Aruch records the custom of fasting on a parent's yahrzeit <a class="src" href="https://www.sefaria.org/Shulchan_Arukh%2C_Orach_Chayim.568.8" target="_blank" rel="noopener">SA, OC 568:8</a>; today it is rarely kept, and most communities instead sponsor a <em>tikkun</em> or kiddush so the brachos said become a merit for the neshama.</p>
+    </div>
+    <div class="card">
+      <div class="kicker">Visit</div>
+      <h3>Go Up to the Kever</h3>
+      <p>Visit on the day itself if possible: the customary <a href="#/tehillim">Tehillim</a>, <a href="#/tefillos/kel-malei">Kel Malei</a>, and a small stone on the matzevah. Full order in <a href="#/kever">At the Kever</a>.</p>
+    </div>
+    <div class="card">
+      <div class="kicker">Remember</div>
+      <h3>Tell Their Story</h3>
+      <p>Share their stories at the table; take on one small practice in their honor — a daily perek, a coin in the pushka, a chesed they loved. A neshama lives on in the deeds it still inspires.</p>
+    </div>
+  </div>
+
+  <h3>On Shabbos or Yom Tov</h3>
+  <ul class="std">
+    <li>Light the candle <strong>before</strong> Shabbos or Yom Tov begins.</li>
+    <li>Kaddish is said as usual; there is no fasting — a kiddush is especially fitting.</li>
+    <li>The kever is not visited on these days — go a day or two before or after.</li>
+  </ul>
+
+  <div class="note"><strong>First yahrzeit:</strong> if burial was more than a day after the passing, many poskim keep the <em>first</em> yahrzeit on the anniversary of the <em>burial</em>, and later years on the date of passing — minhagim differ; ask your rav <a class="src" href="https://halachipedia.com/index.php?title=Yahrzeit" target="_blank" rel="noopener">Gesher HaChaim 32</a>. The first yahrzeit is also, in many communities, the occasion for the unveiling (<em>hakamas matzevah</em>).</div>
+</section>
+
+<!-- ================= THE YEAR ================= -->
+<section class="view" data-view="year">
+  <h2>The Mourning Year <span class="he">אבלות</span></h2>
+  <p class="lede">The yahrzeit is the final stage in the structure of aveilus — honoring the niftar while gently returning the mourner to life.</p>
+  <div class="timeline">
+    <div class="t-item">
+      <div class="when">From passing until burial</div>
+      <h3>Aninus <span class="he">אנינות</span></h3>
+      <p>The immediate mourner (<em>onen</em>) is exempt from positive mitzvos and devotes themselves entirely to arranging the kevurah <a class="src" href="https://www.sefaria.org/Shulchan_Arukh%2C_Yoreh_De'ah.341.1" target="_blank" rel="noopener">SA, YD 341:1</a>.</p>
+    </div>
+    <div class="t-item">
+      <div class="when">Seven days from burial</div>
+      <h3>Shiva <span class="he">שבעה</span></h3>
+      <p>Mourners stay home, sit low, refrain from work, and receive comforters; a minyan davens in the shiva house.</p>
+    </div>
+    <div class="t-item">
+      <div class="when">Thirty days from burial</div>
+      <h3>Shloshim <span class="he">שלושים</span></h3>
+      <p>Back to work, but no haircuts, new clothes, music, or simchas. For relatives other than parents, formal aveilus ends here. Many visit the kever at its close.</p>
+    </div>
+    <div class="t-item">
+      <div class="when">Twelve Hebrew months (for a parent)</div>
+      <h3>The Year <span class="he">י״ב חודש</span></h3>
+      <p>Children refrain from celebrations and say Kaddish — for <strong>eleven months</strong>, so as not to imply the parent needed the full twelve months of judgment <a class="src" href="https://www.sefaria.org/Shulchan_Arukh%2C_Yoreh_De'ah.376.4" target="_blank" rel="noopener">Rema, YD 376:4</a>.</p>
+    </div>
+    <div class="t-item">
+      <div class="when">First Hebrew anniversary</div>
+      <h3>First Yahrzeit <span class="he">יארצייט ראשון</span></h3>
+      <p>Kaddish resumes for the day; in many communities the matzevah is unveiled by this date. From here, every year.</p>
+    </div>
+    <div class="t-item">
+      <div class="when">Four times a year, forever</div>
+      <h3>Yizkor <span class="he">יזכור</span></h3>
+      <p>On <strong>Yom Kippur</strong>, <strong>Shemini Atzeres</strong>, the <strong>last day of Pesach</strong>, and the <strong>second day of Shavuos</strong>. A candle the evening before; tzedakah pledged within the prayer. <a href="#/tefillos/yizkor-text">Full text</a>.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ================= KEVER ================= -->
+<section class="view" data-view="kever">
+  <h2>At the Kever <span class="he">עלייה לקבר</span></h2>
+  <p class="lede">Tefillah at a kever stirs the heart, honors the niftar, and invokes the merit of the neshama — the Gemara says the departed "ask for mercy on our behalf" <a class="src" href="https://www.sefaria.org/Taanit.16a" target="_blank" rel="noopener">Taanis 16a</a>. Minhagim vary; ask your rav when unsure.</p>
+
+  <h3>When to visit — and when not</h3>
+  <div class="chips">
+    <span class="chip go">The yahrzeit itself <span class="muted">the classic day; or the days around it</span></span>
+    <span class="chip go">End of shiva &amp; shloshim <span class="muted">widespread custom</span></span>
+    <span class="chip go">Erev Rosh Hashanah &amp; Erev Yom Kippur <span class="muted">kever avos — <a class="src" href="https://www.sefaria.org/Shulchan_Arukh%2C_Orach_Chayim.581.4" target="_blank" rel="noopener">Rema, OC 581:4</a></span></span>
+    <span class="chip go">Fast days <span class="muted"><a class="src" href="https://www.sefaria.org/Taanit.16a" target="_blank" rel="noopener">Taanis 16a</a></span></span>
+    <span class="chip go">Before a family simcha <span class="muted">to remember and "invite" the niftar</span></span>
+  </div>
+  <div class="chips">
+    <span class="chip no">Shabbos &amp; Yom Tov <span class="muted">not visited</span></span>
+    <span class="chip no">Chol Hamoed · Rosh Chodesh · Chanukah · Purim <span class="muted">most refrain; many permit an unmovable yahrzeit visit — ask</span></span>
+    <span class="chip no">The same kever twice in one day <span class="muted">some refrain, by minhag</span></span>
+  </div>
+
+  <h3>The order at the kever</h3>
+  <div class="steps">
+    <div class="step"><div>
+      <h4>The bracha on seeing Jewish graves</h4>
+      <p>If you have not been to a Jewish cemetery in thirty days: <em>Asher Yatzar Eschem BaDin</em> <a class="src" href="https://www.sefaria.org/Shulchan_Arukh%2C_Orach_Chayim.224.12" target="_blank" rel="noopener">SA, OC 224:12</a> — <a href="#/tefillos/asher-yatzar-badin">full text</a>.</p>
+    </div></div>
+    <div class="step"><div>
+      <h4>The customary Tehillim</h4>
+      <p>Chapters <strong>33, 16, 17, 72, 91, 104, 130</strong>, then the stanzas of <strong>119</strong> spelling the Hebrew name and the letters <span class="he">נשמה</span>; chapter 23 is also widely said. <a href="#/tehillim">Every word spelled out</a> · <a href="#/name">name tool</a>.</p>
+    </div></div>
+    <div class="step"><div>
+      <h4>Kel Malei Rachamim</h4>
+      <p>The memorial prayer, <a href="#/tefillos/kel-malei">text here</a> for a man and for a woman. With a minyan, Mourner's Kaddish may be said.</p>
+    </div></div>
+    <div class="step"><div>
+      <h4>Your own words — to Hashem alone</h4>
+      <p>Pour out your heart, asking Hashem to answer you in the merit of the neshama. One does not pray <em>to</em> the dead <a class="src" href="https://www.sefaria.org/Shulchan_Arukh%2C_Orach_Chayim.581.4" target="_blank" rel="noopener">see Rema OC 581:4, Mishnah Berurah ad loc.</a>; asking the neshama to advocate on high is treated carefully — follow your minhag.</p>
+    </div></div>
+    <div class="step"><div>
+      <h4>Place a small stone</h4>
+      <p>On the matzevah before leaving — a sign of the visit and of enduring kavod <a class="src" href="https://www.sefaria.org/Shulchan_Arukh%2C_Orach_Chayim.224.12" target="_blank" rel="noopener">Be'er Heitev, OC 224:8</a>.</p>
+    </div></div>
+    <div class="step"><div>
+      <h4>Take leave with the pasuk</h4>
+      <p>Many place the left hand on the matzevah and say <a class="src" href="https://www.sefaria.org/Isaiah.58.11" target="_blank" rel="noopener">Yeshayahu 58:11</a>:</p>
+      <p class="he" style="font-size:1.22rem;line-height:2">וְנָחֲךָ יְהֹוָה תָּמִיד וְהִשְׂבִּיעַ בְּצַחְצָחוֹת נַפְשֶׁךָ וְעַצְמֹתֶיךָ יַחֲלִיץ וְהָיִיתָ כְּגַן רָוֶה וּכְמוֹצָא מַיִם אֲשֶׁר לֹא־יְכַזְּבוּ מֵימָיו׃</p>
+      <p class="muted">"And Hashem will guide you always... and you shall be like a watered garden, like a spring whose waters never fail."</p>
+    </div></div>
+    <div class="step"><div>
+      <h4>Wash your hands on leaving</h4>
+      <p>Pour water over each hand (customarily three times, alternating), once at least four amos from the graves; no bracha <a class="src" href="https://www.sefaria.org/Shulchan_Arukh%2C_Orach_Chayim.4.18" target="_blank" rel="noopener">Rema, OC 4:18</a>. The widespread minhag is to let the hands air-dry. Many also give tzedakah on the way out.</p>
+    </div></div>
+  </div>
+
+  <h3>Conduct in the cemetery</h3>
+  <div class="dodont">
+    <div class="dd do">
+      <h3>Do</h3>
+      <ul>
+        <li>Dress and act with kavod — a beis hakvaros is compared to a shul in sanctity <a class="src" href="https://www.sefaria.org/Shulchan_Arukh%2C_Yoreh_De'ah.368.1" target="_blank" rel="noopener">SA, YD 368:1</a></li>
+        <li>Silence your phone; speak only what honors the niftar</li>
+        <li>Give tzedakah before or after the visit</li>
+        <li>Go with someone if visiting at night — many customs caution against going alone</li>
+        <li>Kohanim: stand outside the fence, within view, and daven from there <a class="src" href="https://www.sefaria.org/Shulchan_Arukh%2C_Yoreh_De'ah.371.5" target="_blank" rel="noopener">SA, YD 371:5</a></li>
+      </ul>
+    </div>
+    <div class="dd dont">
+      <h3>Don't</h3>
+      <ul>
+        <li>Eat, drink, or smoke; no idle chatter or levity <a class="src" href="https://www.sefaria.org/Shulchan_Arukh%2C_Yoreh_De'ah.368.1" target="_blank" rel="noopener">SA, YD 368:1</a></li>
+        <li>Step on or over graves, sit on matzevos, or rest objects on them</li>
+        <li>Wear visible tzitzis, don tefillin, or carry a sefer Torah within four amos of a kever — <em>lo'eg larash</em>, "mocking the helpless" <a class="src" href="https://www.sefaria.org/Shulchan_Arukh%2C_Yoreh_De'ah.367.3" target="_blank" rel="noopener">SA, YD 367:3</a> <a class="src" href="https://www.sefaria.org/Shulchan_Arukh%2C_Orach_Chayim.45.1" target="_blank" rel="noopener">OC 45:1</a></li>
+        <li>Learn Torah near a kever other than in the niftar's honor</li>
+        <li>Kohanim: do not enter the cemetery or come within four amos of a kever <a class="src" href="https://www.sefaria.org/Shulchan_Arukh%2C_Yoreh_De'ah.369.1" target="_blank" rel="noopener">SA, YD 369–371</a></li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="note"><strong>No signal at the cemetery?</strong> This page works offline once loaded — all the Tehillim and tefillos are stored inside it. Open it before you leave home, or print what you need (and remember the <em>geniza</em> rule).</div>
+</section>
+
+<!-- ================= TEFILLOS ================= -->
+<section class="view" data-view="tefillos">
+  <h2>The Tefillos <span class="he">תפילות</span></h2>
+  <p class="lede">Every tefillah you need for the yahrzeit and the kever, spelled out in full. Nusach Ashkenaz; Sephardic and Chassidic texts differ slightly — follow your siddur.</p>
+
+  <div class="prayer" id="mourners-kaddish">
+    <div class="kicker">With a minyan · evening, morning &amp; afternoon of the yahrzeit</div>
+    <h3>Mourner's Kaddish <span class="he">קדיש יתום</span></h3>
+    <p class="muted">Said standing, feet together. Congregation responses in parentheses — answering "Amen, yehei shmei rabba" aloud is itself a great merit for the neshama <a class="src" href="https://www.sefaria.org/Shabbat.119b" target="_blank" rel="noopener">Shabbos 119b</a>.</p>
+    <span class="he">יִתְגַּדַּל וְיִתְקַדַּשׁ שְׁמֵהּ רַבָּא. <small>(אָמֵן)</small><br>
+    בְּעָלְמָא דִּי בְרָא כִרְעוּתֵהּ, וְיַמְלִיךְ מַלְכוּתֵהּ בְּחַיֵּיכוֹן וּבְיוֹמֵיכוֹן וּבְחַיֵּי דְכָל בֵּית יִשְׂרָאֵל, בַּעֲגָלָא וּבִזְמַן קָרִיב, וְאִמְרוּ אָמֵן. <small>(אָמֵן. יְהֵא שְׁמֵהּ רַבָּא מְבָרַךְ לְעָלַם וּלְעָלְמֵי עָלְמַיָּא)</small><br>
+    יְהֵא שְׁמֵהּ רַבָּא מְבָרַךְ לְעָלַם וּלְעָלְמֵי עָלְמַיָּא.<br>
+    יִתְבָּרַךְ וְיִשְׁתַּבַּח וְיִתְפָּאַר וְיִתְרוֹמַם וְיִתְנַשֵּׂא וְיִתְהַדָּר וְיִתְעַלֶּה וְיִתְהַלָּל שְׁמֵהּ דְּקֻדְשָׁא בְּרִיךְ הוּא. <small>(בְּרִיךְ הוּא)</small><br>
+    לְעֵלָּא מִן כָּל בִּרְכָתָא וְשִׁירָתָא תֻּשְׁבְּחָתָא וְנֶחֱמָתָא דַּאֲמִירָן בְּעָלְמָא, וְאִמְרוּ אָמֵן. <small>(אָמֵן)</small><br>
+    יְהֵא שְׁלָמָא רַבָּא מִן שְׁמַיָּא וְחַיִּים עָלֵינוּ וְעַל כָּל יִשְׂרָאֵל, וְאִמְרוּ אָמֵן. <small>(אָמֵן)</small><br>
+    עֹשֶׂה שָׁלוֹם בִּמְרוֹמָיו הוּא יַעֲשֶׂה שָׁלוֹם עָלֵינוּ וְעַל כָּל יִשְׂרָאֵל, וְאִמְרוּ אָמֵן. <small>(אָמֵן)</small></span>
+    <details><summary>Transliteration — read it slowly; it is fine to be helped</summary>
+      <p class="translit">Yis-gadal v'yis-kadash sh'mei rabba. <small>(Amen.)</small><br>
+      B'alma di v'ra chir-usei, v'yamlich malchusei, b'chayeichon uv'yomeichon uv'chayei d'chol beis Yisroel, ba-agala u-vizman kariv, v'imru Amen. <small>(Amen. Y'hei sh'mei rabba m'vorach l'olam ul'olmei olmaya.)</small><br>
+      Y'hei sh'mei rabba m'vorach l'olam ul'olmei olmaya.<br>
+      Yis-borach v'yish-tabach v'yis-po'ar v'yis-romam v'yis-nasei, v'yis-hadar v'yis-aleh v'yis-halal sh'mei d'kudsha b'rich hu. <small>(B'rich hu.)</small><br>
+      L'eila min kol bir-chasa v'shirasa, tush-b'chasa v'neche-masa, da-amiran b'alma, v'imru Amen. <small>(Amen.)</small><br>
+      Y'hei sh'lama rabba min sh'maya, v'chayim aleinu v'al kol Yisroel, v'imru Amen. <small>(Amen.)</small><br>
+      Oseh shalom bim-romav, hu ya-aseh shalom aleinu v'al kol Yisroel, v'imru Amen. <small>(Amen.)</small></p>
+      <p class="muted">During the Aseres Yemei Teshuvah say "l'eila <strong>ul'eila mikol</strong> birchasa." Before "Oseh shalom," three steps back; bow left, right, forward.</p>
+    </details>
+  </div>
+
+  <div class="prayer" id="kaddish-drabanan">
+    <div class="kicker">With a minyan · after learning Mishnayos</div>
+    <h3>Kaddish D'Rabbanan <span class="he">קדיש דרבנן</span></h3>
+    <p class="muted">Said after learning Torah she-b'al peh (such as Mishnayos for the neshama). It is the Mourner's Kaddish with one added paragraph for those who learn Torah.</p>
+    <span class="he">יִתְגַּדַּל וְיִתְקַדַּשׁ שְׁמֵהּ רַבָּא... <small>(as above, through:)</small> דַּאֲמִירָן בְּעָלְמָא, וְאִמְרוּ אָמֵן. <small>(אָמֵן)</small><br>
+    עַל יִשְׂרָאֵל וְעַל רַבָּנָן, וְעַל תַּלְמִידֵיהוֹן וְעַל כָּל תַּלְמִידֵי תַלְמִידֵיהוֹן, וְעַל כָּל מָאן דְּעָסְקִין בְּאוֹרַיְתָא, דִּי בְאַתְרָא הָדֵין וְדִי בְכָל אֲתַר וַאֲתַר, יְהֵא לְהוֹן וּלְכוֹן שְׁלָמָא רַבָּא, חִנָּא וְחִסְדָּא וְרַחֲמִין, וְחַיִּין אֲרִיכִין, וּמְזוֹנֵי רְוִיחֵי, וּפֻרְקָנָא, מִן קֳדָם אֲבוּהוֹן דִּי בִשְׁמַיָּא, וְאִמְרוּ אָמֵן. <small>(אָמֵן)</small><br>
+    יְהֵא שְׁלָמָא רַבָּא מִן שְׁמַיָּא וְחַיִּים טוֹבִים עָלֵינוּ וְעַל כָּל יִשְׂרָאֵל, וְאִמְרוּ אָמֵן. <small>(אָמֵן)</small><br>
+    עֹשֶׂה שָׁלוֹם בִּמְרוֹמָיו הוּא בְּרַחֲמָיו יַעֲשֶׂה שָׁלוֹם עָלֵינוּ וְעַל כָּל יִשְׂרָאֵל, וְאִמְרוּ אָמֵן. <small>(אָמֵן)</small></span>
+    <details><summary>Translation of the added paragraph</summary>
+      <p class="translit">Upon Israel, and upon the Sages, and upon their disciples, and upon all the disciples of their disciples, and upon all who occupy themselves with Torah, here and in every place — may there be for them and for you abundant peace, grace, kindness, mercy, long life, ample sustenance, and salvation, from before their Father in Heaven; and say Amen.</p>
+    </details>
+  </div>
+
+  <div class="prayer" id="kel-malei">
+    <div class="kicker">At the kever · on the yahrzeit · at Yizkor</div>
+    <h3>Kel Malei Rachamim <span class="he">אֵ-ל מָלֵא רַחֲמִים</span></h3>
+    <h4>For a man</h4>
+    <span class="he">אֵ-ל מָלֵא רַחֲמִים שׁוֹכֵן בַּמְּרוֹמִים, הַמְצֵא מְנוּחָה נְכוֹנָה עַל כַּנְפֵי הַשְּׁכִינָה, בְּמַעֲלוֹת קְדוֹשִׁים וּטְהוֹרִים כְּזֹהַר הָרָקִיעַ מַזְהִירִים, אֶת נִשְׁמַת <small>(פלוני בֶּן פלוני)</small> שֶׁהָלַךְ לְעוֹלָמוֹ, בַּעֲבוּר שֶׁנָּדְבוּ צְדָקָה בְּעַד הַזְכָּרַת נִשְׁמָתוֹ, בְּגַן עֵדֶן תְּהֵא מְנוּחָתוֹ. לָכֵן בַּעַל הָרַחֲמִים יַסְתִּירֵהוּ בְּסֵתֶר כְּנָפָיו לְעוֹלָמִים, וְיִצְרֹר בִּצְרוֹר הַחַיִּים אֶת נִשְׁמָתוֹ, ה' הוּא נַחֲלָתוֹ, וְיָנוּחַ בְּשָׁלוֹם עַל מִשְׁכָּבוֹ, וְנֹאמַר אָמֵן.</span>
+    <h4>For a woman</h4>
+    <span class="he">אֵ-ל מָלֵא רַחֲמִים שׁוֹכֵן בַּמְּרוֹמִים, הַמְצֵא מְנוּחָה נְכוֹנָה עַל כַּנְפֵי הַשְּׁכִינָה, בְּמַעֲלוֹת קְדוֹשִׁים וּטְהוֹרִים כְּזֹהַר הָרָקִיעַ מַזְהִירִים, אֶת נִשְׁמַת <small>(פלונית בַּת פלוני)</small> שֶׁהָלְכָה לְעוֹלָמָהּ, בַּעֲבוּר שֶׁנָּדְבוּ צְדָקָה בְּעַד הַזְכָּרַת נִשְׁמָתָהּ, בְּגַן עֵדֶן תְּהֵא מְנוּחָתָהּ. לָכֵן בַּעַל הָרַחֲמִים יַסְתִּירֶהָ בְּסֵתֶר כְּנָפָיו לְעוֹלָמִים, וְיִצְרֹר בִּצְרוֹר הַחַיִּים אֶת נִשְׁמָתָהּ, ה' הִיא נַחֲלָתָהּ, וְתָנוּחַ בְּשָׁלוֹם עַל מִשְׁכָּבָהּ, וְנֹאמַר אָמֵן.</span>
+    <details><summary>Translation</summary>
+      <p class="translit">O G&#8209;d, full of compassion, Who dwells on high — grant true rest upon the wings of the Shechinah, in the exalted levels of the holy and pure who shine like the radiance of the firmament, to the neshama of ______ son/daughter of ______, who has gone to their eternal world; for charity has been given in remembrance of their neshama — may their rest be in Gan Eden. Therefore may the Master of mercy shelter them in the shelter of His wings forever, and bind their neshama in the bond of eternal life. Hashem is their portion; may they rest in peace upon their resting place. And let us say: Amen.</p>
+    </details>
+    <p class="muted">Insert the Hebrew name and the father's name (e.g., "Moshe ben Yaakov," "Sarah bas Avraham"). Many use the mother's name at the kever — follow your minhag.</p>
+  </div>
+
+  <div class="prayer" id="yizkor-text">
+    <div class="kicker">In shul · Yom Kippur, Shemini Atzeres, last day of Pesach, second day of Shavuos</div>
+    <h3>Yizkor <span class="he">יזכור</span></h3>
+    <p class="muted">Said during the Torah service; those with both parents living customarily step out. "B'li neder" — "without a formal vow" — is part of the pledge.</p>
+    <h4>For a father</h4>
+    <span class="he">יִזְכֹּר אֱלֹהִים נִשְׁמַת אַבָּא מוֹרִי <small>(פלוני בֶּן פלוני)</small> שֶׁהָלַךְ לְעוֹלָמוֹ, בַּעֲבוּר שֶׁבְּלִי נֶדֶר אֶתֵּן צְדָקָה בַּעֲדוֹ. בִּשְׂכַר זֶה תְּהֵא נַפְשׁוֹ צְרוּרָה בִּצְרוֹר הַחַיִּים, עִם נִשְׁמוֹת אַבְרָהָם יִצְחָק וְיַעֲקֹב, שָׂרָה רִבְקָה רָחֵל וְלֵאָה, וְעִם שְׁאָר צַדִּיקִים וְצִדְקָנִיּוֹת שֶׁבְּגַן עֵדֶן, וְנֹאמַר אָמֵן.</span>
+    <h4>For a mother</h4>
+    <span class="he">יִזְכֹּר אֱלֹהִים נִשְׁמַת אִמִּי מוֹרָתִי <small>(פלונית בַּת פלוני)</small> שֶׁהָלְכָה לְעוֹלָמָהּ, בַּעֲבוּר שֶׁבְּלִי נֶדֶר אֶתֵּן צְדָקָה בַּעֲדָהּ. בִּשְׂכַר זֶה תְּהֵא נַפְשָׁהּ צְרוּרָה בִּצְרוֹר הַחַיִּים, עִם נִשְׁמוֹת אַבְרָהָם יִצְחָק וְיַעֲקֹב, שָׂרָה רִבְקָה רָחֵל וְלֵאָה, וְעִם שְׁאָר צַדִּיקִים וְצִדְקָנִיּוֹת שֶׁבְּגַן עֵדֶן, וְנֹאמַר אָמֵן.</span>
+    <details><summary>Translation</summary>
+      <p class="translit">May G&#8209;d remember the neshama of my father, my teacher / my mother, my teacher, ______, who has gone to their eternal world; because, without vowing, I shall give tzedakah on their behalf. In this merit may their soul be bound in the bond of eternal life, together with the neshamos of Avraham, Yitzchak and Yaakov, Sarah, Rivkah, Rachel and Leah, and with the other righteous men and women in Gan Eden. And let us say: Amen.</p>
+    </details>
+    <p class="muted">Your machzor has parallel versions for a husband, wife, son, daughter, brother, and sister.</p>
+  </div>
+
+  <div class="prayer" id="asher-yatzar-badin">
+    <div class="kicker">On entering a cemetery · if 30 days have passed since your last visit · <a class="src" href="https://www.sefaria.org/Shulchan_Arukh%2C_Orach_Chayim.224.12" target="_blank" rel="noopener">SA, OC 224:12</a></div>
+    <h3>The Bracha on Seeing Jewish Graves <span class="he">אֲשֶׁר יָצַר אֶתְכֶם בַּדִּין</span></h3>
+    <span class="he">בָּרוּךְ אַתָּה ה' אֱ-לֹהֵינוּ מֶלֶךְ הָעוֹלָם, אֲשֶׁר יָצַר אֶתְכֶם בַּדִּין, וְזָן וְכִלְכֵּל אֶתְכֶם בַּדִּין, וְהֵמִית אֶתְכֶם בַּדִּין, וְיוֹדֵעַ מִסְפַּר כֻּלְּכֶם בַּדִּין, וְהוּא עָתִיד לְהַחֲיוֹתְכֶם וּלְקַיֵּם אֶתְכֶם בַּדִּין. בָּרוּךְ אַתָּה ה', מְחַיֵּה הַמֵּתִים.</span>
+    <details><summary>Translation</summary>
+      <p class="translit">Blessed are You, Hashem our G&#8209;d, King of the universe, Who formed you in judgment, nourished and sustained you in judgment, brought death upon you in judgment, knows the number of you all in judgment, and Who will in the future restore you to life and establish you in judgment. Blessed are You, Hashem, Who revives the dead.</p>
+    </details>
+  </div>
+</section>
+
+<!-- ================= TEHILLIM ================= -->
+<section class="view" data-view="tehillim">
+  <h2>The Tehillim, Spelled Out <span class="he">תהלים</span></h2>
+  <p class="lede">The chapters customarily said at the kever and on the yahrzeit — every word with nekudos, stored inside this page so it works with no signal at the cemetery. Tap a chapter to open it.</p>
+  <div style="margin:.6rem 0 1rem;display:flex;gap:.7rem;flex-wrap:wrap" class="no-print">
+    <button type="button" class="secondary" onclick="toggleAllPsalms(true)">Open all</button>
+    <button type="button" class="secondary" onclick="toggleAllPsalms(false)">Close all</button>
+    <button type="button" class="secondary" onclick="window.print()">Print open chapters</button>
+  </div>
+  <div id="psalmList"></div>
+  <p class="muted">Texts follow the Masoretic Tehillim. When reciting Tehillim as prayer, Hashem's name is said as written. If you print, remember the <em>geniza</em> rule.</p>
+</section>
+
+<!-- ================= NAME ================= -->
+<section class="view" data-view="name">
+  <h2>Tehillim for Their Name <span class="he">פסוקי שמו</span></h2>
+  <p class="lede">The time-honored custom: say the stanzas of <strong>Tehillim 119</strong> — eight pesukim per letter — spelling the Hebrew name of the niftar, then the letters <span class="he">נ־ש־מ־ה</span> (neshama). Tap the letters; the exact pesukim are assembled for you.</p>
+
+  <div class="card">
+    <div class="kicker">Tap the letters of the Hebrew name (first name only, e.g. משה or שרה)</div>
+    <div class="keypad" id="keypad"></div>
+    <div class="name-display" id="nameDisplay">&nbsp;</div>
+    <div style="margin-top:.8rem;display:flex;gap:.7rem;flex-wrap:wrap" class="no-print">
+      <button type="button" onclick="buildNameTehillim()">Show the Pesukim</button>
+      <button type="button" class="secondary" onclick="nameBackspace()">⌫ Backspace</button>
+      <button type="button" class="secondary" onclick="nameClear()">Clear</button>
+      <button type="button" class="secondary" onclick="printNameTehillim()">Print just these</button>
+    </div>
+    <p class="muted" style="margin-top:.6rem">Final letters (ך ם ן ף ץ) are read as their regular forms. Don't know the Hebrew name? See <a href="#/guide">Begin Here</a>.</p>
+  </div>
+
+  <div id="nameStanzas"></div>
+</section>
+
+<!-- ================= TZEDAKAH ================= -->
+<section class="view" data-view="tzedakah">
+  <h2>Tzedakah L'ilui Nishmas <span class="he">צדקה לעילוי נשמת</span></h2>
+  <p class="lede">"<span class="he">וּצְדָקָה תַּצִּיל מִמָּוֶת</span> — tzedakah saves from death" <a class="src" href="https://www.sefaria.org/Proverbs.10.2" target="_blank" rel="noopener">Mishlei 10:2</a>. Charity given <em>l'ilui nishmas</em> keeps their influence generating good in this world. The traditional times: the yahrzeit, Yizkor (the pledge is built into the prayer), and the kever visit.</p>
+
+  <h3>Ways to give</h3>
+  <div class="two-col">
+    <div class="card"><h3>Causes they loved</h3><p>The most personal choice: their shul, their school, the chesed they cared about.</p></div>
+    <div class="card"><h3>Torah in their merit</h3><p>Sponsor a day of learning at a yeshiva or kollel, or a shiur, on the yahrzeit day.</p></div>
+    <div class="card"><h3>Feed the hungry</h3><p>Sponsoring meals for the poor is the classic memorial merit.</p></div>
+    <div class="card"><h3>Kaddish &amp; Mishnayos services</h3><p>Where no family member can say Kaddish, reputable organizations arrange it for the eleven months or annually.</p></div>
+    <div class="card"><h3>A standing remembrance</h3><p>Most shuls will add a name to the memorial plaque board, lit each yahrzeit.</p></div>
+    <div class="card"><h3>A pushka at home</h3><p>A coin a day where the yahrzeit candle burns keeps the merit flowing all year.</p></div>
+  </div>
+
+  <h3>Established organizations</h3>
+  <p class="muted">Widely known organizations that accept memorial donations or arrange Kaddish — for convenience, not endorsements. Verify any charity yourself (<a href="https://www.charitynavigator.org" target="_blank" rel="noopener">Charity Navigator</a>).</p>
+  <div class="two-col">
+    <div class="card"><h3><a href="https://colelchabad.org" target="_blank" rel="noopener">Colel Chabad</a></h3><p>Israel's longest-running tzedakah (est. 1788): food security, widows and orphans; memorial dedications and Kaddish services.</p></div>
+    <div class="card"><h3><a href="https://www.yadsarah.org" target="_blank" rel="noopener">Yad Sarah</a></h3><p>Israel's largest volunteer organization — free medical equipment and home-care support.</p></div>
+    <div class="card"><h3><a href="https://www.leket.org/en" target="_blank" rel="noopener">Leket Israel</a></h3><p>Israel's national food bank.</p></div>
+    <div class="card"><h3><a href="https://www.jnf.org" target="_blank" rel="noopener">Jewish National Fund</a></h3><p>Trees planted in Eretz Yisrael in memory — a century-old tradition.</p></div>
+    <div class="card"><h3><a href="https://www.misaskim.org" target="_blank" rel="noopener">Misaskim</a></h3><p>Supports bereaved families; safeguards the dignity of the niftar.</p></div>
+    <div class="card"><h3><a href="https://aish.com/kaddish-service/" target="_blank" rel="noopener">Aish — Kaddish Service</a></h3><p>Kaddish in Yerushalayim for the eleven months or annually on the yahrzeit.</p></div>
+  </div>
+</section>
+
+<!-- ================= REFERENCE ================= -->
+<section class="view" data-view="reference">
+  <h2>Reference <span class="he">מקורות ומילון</span></h2>
+
+  <h3>Glossary</h3>
+  <p class="muted">Words on this site you may not have grown up with — no embarrassment, just definitions.</p>
+  <dl class="glossary">
+    <dt>Aliyah</dt><dd>Being called up to the Torah; also "ascent" — <em>aliyas neshama</em>, the ascent of the soul.</dd>
+    <dt>Aveilus</dt><dd>The halachic state and practices of mourning.</dd>
+    <dt>Chevra kadisha</dt><dd>The "holy society" that prepares the deceased for burial and keeps records.</dd>
+    <dt>Gan Eden</dt><dd>The Garden of Eden — the abode of neshamos in the World to Come.</dd>
+    <dt>Geniza (sheimos)</dt><dd>Respectful disposal of papers bearing Hashem's name or pesukim; never trash them.</dd>
+    <dt>Kaddish</dt><dd>The Aramaic sanctification of Hashem's name said by mourners with a minyan.</dd>
+    <dt>Kever</dt><dd>A grave. <em>Kever avos</em> — visiting the graves of one's forebears.</dd>
+    <dt>Kohen</dt><dd>A descendant of Aharon, the priestly family, who may not come near graves.</dd>
+    <dt>L'ilui nishmas</dt><dd>"For the elevation of the neshama of..." — said when giving or learning in someone's memory.</dd>
+    <dt>Matzevah</dt><dd>The tombstone; <em>hakamas matzevah</em>, its erection or unveiling.</dd>
+    <dt>Minyan</dt><dd>A quorum of ten Jewish men, required for Kaddish and communal prayer.</dd>
+    <dt>Mishnayos</dt><dd>Chapters of the Mishnah, customarily learned for a neshama.</dd>
+    <dt>Neshama</dt><dd>The soul — the part of a person that is eternal. Plural: neshamos.</dd>
+    <dt>Niftar / nifteres</dt><dd>The departed (male / female) — literally "released."</dd>
+    <dt>Pushka</dt><dd>A small charity box kept at home.</dd>
+    <dt>Shaliach tzibbur</dt><dd>The one who leads the congregation in prayer ("the amud").</dd>
+    <dt>Tehillim</dt><dd>The Book of Psalms; a single chapter is a <em>perek</em> or <em>kapitel</em>.</dd>
+    <dt>Yahrzeit licht</dt><dd>The 24-hour memorial candle (Yiddish: "year-time light").</dd>
+    <dt>Yizkor</dt><dd>The memorial service said four times a year in shul.</dd>
+  </dl>
+
+  <h3>Sources cited on this site</h3>
+  <p class="muted">Tap any source chip throughout the site to open the text itself on Sefaria. The principal sources:</p>
+  <ul class="std">
+    <li><strong>Tanach:</strong> <a href="https://www.sefaria.org/Genesis.1.5" target="_blank" rel="noopener">Bereishis 1:5</a> (the day begins at evening); <a href="https://www.sefaria.org/Proverbs.10.2" target="_blank" rel="noopener">Mishlei 10:2</a> and <a href="https://www.sefaria.org/Proverbs.20.27" target="_blank" rel="noopener">20:27</a>; <a href="https://www.sefaria.org/Isaiah.58.11" target="_blank" rel="noopener">Yeshayahu 58:11</a>; <a href="https://www.sefaria.org/Psalms.72.16" target="_blank" rel="noopener">Tehillim 72:16</a>.</li>
+    <li><strong>Gemara:</strong> <a href="https://www.sefaria.org/Taanit.16a" target="_blank" rel="noopener">Taanis 16a</a> (visiting graves); <a href="https://www.sefaria.org/Shabbat.119b" target="_blank" rel="noopener">Shabbos 119b</a> (the power of "yehei shmei rabba").</li>
+    <li><strong>Shulchan Aruch &amp; Rema — Orach Chaim:</strong> <a href="https://www.sefaria.org/Shulchan_Arukh%2C_Orach_Chayim.4.18" target="_blank" rel="noopener">4:18</a> (washing after a cemetery); <a href="https://www.sefaria.org/Shulchan_Arukh%2C_Orach_Chayim.45.1" target="_blank" rel="noopener">45:1</a> (tefillin near graves); <a href="https://www.sefaria.org/Shulchan_Arukh%2C_Orach_Chayim.224.12" target="_blank" rel="noopener">224:12</a> (bracha on seeing graves; Be'er Heitev there, the stone custom); <a href="https://www.sefaria.org/Shulchan_Arukh%2C_Orach_Chayim.568.7-8" target="_blank" rel="noopener">568:7–8</a> (yahrzeit fast; Adar in a leap year); <a href="https://www.sefaria.org/Shulchan_Arukh%2C_Orach_Chayim.581.4" target="_blank" rel="noopener">581:4</a> (kever avos erev Rosh Hashanah); <a href="https://www.sefaria.org/Shulchan_Arukh%2C_Orach_Chayim.610.4" target="_blank" rel="noopener">610:4</a> (memorial light).</li>
+    <li><strong>Shulchan Aruch — Yoreh De'ah:</strong> <a href="https://www.sefaria.org/Shulchan_Arukh%2C_Yoreh_De'ah.341.1" target="_blank" rel="noopener">341</a> (aninus); <a href="https://www.sefaria.org/Shulchan_Arukh%2C_Yoreh_De'ah.367.3" target="_blank" rel="noopener">367</a> (lo'eg larash); <a href="https://www.sefaria.org/Shulchan_Arukh%2C_Yoreh_De'ah.368.1" target="_blank" rel="noopener">368</a> (cemetery conduct); <a href="https://www.sefaria.org/Shulchan_Arukh%2C_Yoreh_De'ah.369.1" target="_blank" rel="noopener">369–371</a> (kohanim); <a href="https://www.sefaria.org/Shulchan_Arukh%2C_Yoreh_De'ah.376.4" target="_blank" rel="noopener">376:4</a> (Kaddish, eleven months, leading davening, yahrzeit).</li>
+    <li><strong>Later works:</strong> Or Zarua II (Rabbi Akiva and the origin of Mourner's Kaddish); Gesher HaChaim ch. 32 (the classic compendium of yahrzeit law and custom); Mishnah Berurah on the simanim above.</li>
+  </ul>
+
+  <h3>Further resources</h3>
+  <ul class="std">
+    <li><a href="https://www.hebcal.com/yahrzeit" target="_blank" rel="noopener">Hebcal Yahrzeit Calendar</a> — email reminders and calendar feeds.</li>
+    <li><a href="https://www.chabad.org/library/article_cdo/aid/281636/jewish/Yahrzeit-Memorial-Anniversary.htm" target="_blank" rel="noopener">Chabad.org — Yahrzeit guide</a> · <a href="https://www.chabad.org/centers" target="_blank" rel="noopener">Chabad center locator</a>.</li>
+    <li><a href="https://aish.com/yahrtzeit-commemoration/" target="_blank" rel="noopener">Aish — Yahrtzeit Commemoration</a>.</li>
+    <li><a href="https://halachipedia.com/index.php?title=Yahrzeit" target="_blank" rel="noopener">Halachipedia — Yahrzeit</a> — sourced halachic detail.</li>
+    <li><a href="https://www.godaven.com" target="_blank" rel="noopener">GoDaven</a> — find a minyan anywhere.</li>
+    <li><a href="https://www.jewishgen.org/databases/cemetery/" target="_blank" rel="noopener">JewishGen Burial Registry</a> — locate the kevarim of relatives.</li>
+    <li><a href="https://www.sefaria.org" target="_blank" rel="noopener">Sefaria</a> — free texts of Tehillim, Mishnayos, Shulchan Aruch, and more.</li>
+  </ul>
+</section>
+
+</main>
+
+<button id="backTop" title="Back to top" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+
+<footer>
+  <p><strong>Ner Zikaron</strong> · <span class="he">נר זכרון</span> · May the neshamos of all our loved ones have an aliyah, and may their memory be a blessing.</p>
+  <p style="margin-top:.6rem;max-width:46rem;margin-inline:auto">Traditional halacha and minhag with common variations noted; customs differ between communities. An educational aid, <strong>not a psak halacha</strong> — ask your rav. Calculator cross-checked against <a href="https://www.hebcal.com" target="_blank" rel="noopener">Hebcal</a>; Tehillim from open Masoretic text data. Printed pages with pesukim or Hashem's name require <em>geniza</em>.</p>
+</footer>
+
+<script>
+const TEHILLIM={"16":["מִכְתָּם לְדָוִד שָׁמְרֵנִי אֵל כִּי־חָסִיתִי בָךְ:","אָמַרְתְּ לַיהֹוָה אֲדֹנָי אָתָּה טוֹבָתִי בַּל־עָלֶיךָ:","לִקְדוֹשִׁים אֲשֶׁר־בָּאָרֶץ הֵמָּה וְאַדִּירֵי כָּל־חֶפְצִי־בָם:","יִרְבּוּ עַצְּבוֹתָם אַחֵר מָהָרוּ בַּל־אַסִּיךְ נִסְכֵּיהֶם מִדָּם וּבַל־אֶשָּׂא אֶת־שְׁמוֹתָם עַל־שְׂפָתָי:","יְהֹוָה מְנָת חֶלְקִי וְכוֹסִי אַתָּה תּוֹמִיךְ גּוֹרָלִי:","חֲבָלִים נָפְלוּ־לִי בַּנְּעִמִים אַף־נַחֲלָת שָׁפְרָה עָלָי:","אֲבָרֵךְ אֶת־יְהֹוָה אֲשֶׁר יְעָצָנִי אַף־לֵילוֹת יִסְּרוּנִי כִלְיוֹתָי:","שִׁוִּיתִי יְהֹוָה לְנֶגְדִּי תָמִיד כִּי מִימִינִי בַּל־אֶמּוֹט:","לָכֵן | שָׂמַח לִבִּי וַיָּגֶל כְּבוֹדִי אַף־בְּשָׂרִי יִשְׁכֹּן לָבֶטַח:","כִּי | לֹא־תַעֲזֹב נַפְשִׁי לִשְׁאוֹל לֹא־תִתֵּן חֲסִידְךָ<span class=\"instructional ksiv\"> (כתיב חֲסִידְיךָ) </span> לִרְאוֹת שָׁחַת:","תּוֹדִיעֵנִי אֹרַח חַיִּים שׂבַע שְׂמָחוֹת אֶת־פָּנֶיךָ נְעִמוֹת בִּימִינְךָ נֶצַח:"],"17":["תְּפִלָּה לְדָוִד שִׁמְעָה יְהֹוָה | צֶדֶק הַקְשִׁיבָה רִנָּתִי הַאֲזִינָה תְפִלָּתִי בְּלֹא שִׂפְתֵי מִרְמָה:","מִלְּפָנֶיךָ מִשְׁפָּטִי יֵצֵא עֵינֶיךָ תֶּחֱזֶינָה מֵּישָׁרִים:","בָּחַנְתָּ לִבִּי | פָּקַדְתָּ לַּיְלָה צְרַפְתַּנִי בַל־תִּמְצָא זַמֹּתִי בַּל־יַעֲבָר־פִּי:","לִפְעֻלּוֹת אָדָם בִּדְבַר שְׂפָתֶיךָ אֲנִי שָׁמַרְתִּי אָרְחוֹת פָּרִיץ:","תָּמֹךְ אֲשֻׁרַי בְּמַעְגְּלוֹתֶיךָ בַּל־נָמוֹטוּ פְעָמָי:","אֲנִי קְרָאתִיךָ כִּי־תַעֲנֵנִי אֵל הַט־אָזְנְךָ לִי שְׁמַע אִמְרָתִי:","הַפְלֵה חֲסָדֶיךָ מוֹשִׁיעַ חוֹסִים מִמִּתְקוֹמְמִים בִּימִינֶךָ:","שָׁמְרֵנִי כְּאִישׁוֹן בַּת־עָיִן בְּצֵל כְּנָפֶיךָ תַּסְתִּירֵנִי:","מִפְּנֵי רְשָׁעִים זוּ שַׁדּוּנִי אֹיְבַי בְּנֶפֶשׁ יַקִּיפוּ עָלָי:","חֶלְבָּמוֹ סָגְרוּ פִּימוֹ דִּבְּרוּ בְגֵאוּת:","אַשֻּׁרֵנוּ עַתָּה סְבָבוּנוּ<span class=\"instructional ksiv\"> (כתיב סְבָבוּניּ) </span> עֵינֵיהֶם יָשִׁיתוּ לִנְטוֹת בָּאָרֶץ:","דִּמְיֹנוֹ כְּאַרְיֵה יִכְסוֹף לִטְרֹף וְכִכְפִיר יֹשֵׁב בְּמִסְתָּרִים:","קוּמָה יְהֹוָה קַדְּמָה פָנָיו הַכְרִיעֵהוּ פַּלְּטָה נַפְשִׁי מֵרָשָׁע חַרְבֶּךָ:","מִמְתִים יָדְךָ | יְהֹוָה מִמְתִים מֵחֶלֶד חֶלְקָם בַּחַיִּים וּצְפוּנְךָ<span class=\"instructional ksiv\"> (כתיב וּצְפיּנְךָ) </span> תְּמַלֵּא בִטְנָם יִשְׂבְּעוּ בָנִים וְהִנִּיחוּ יִתְרָם לְעוֹלְלֵיהֶם:","אֲנִי בְּצֶדֶק אֶחֱזֶה פָנֶיךָ אֶשְׂבְּעָה בְהָקִיץ תְּמוּנָתֶךָ:"],"23":["מִזְמוֹר לְדָוִד יְהֹוָה רֹעִי לֹא אֶחְסָר:","בִּנְאוֹת דֶּשֶׁא יַרְבִּיצֵנִי עַל־מֵי מְנֻחוֹת יְנַהֲלֵנִי:","נַפְשִׁי יְשׁוֹבֵב יַנְחֵנִי בְמַעְגְּלֵי־צֶדֶק לְמַעַן שְׁמוֹ:","גַּם כִּי־אֵלֵךְ בְּגֵיא צַלְמָוֶת לֹא־אִירָא רָע כִּי־אַתָּה עִמָּדִי שִׁבְטְךָ וּמִשְׁעַנְתֶּךָ הֵמָּה יְנַחֲמֻנִי:","תַּעֲרֹךְ לְפָנַי | שֻׁלְחָן נֶגֶד צֹרְרָי דִּשַּׁנְתָּ בַשֶּׁמֶן רֹאשִׁי כּוֹסִי רְוָיָה:","אַךְ טוֹב וָחֶסֶד יִרְדְּפוּנִי כָּל־יְמֵי חַיָּי וְשַׁבְתִּי בְּבֵית־יְהֹוָה לְאֹרֶךְ יָמִים:"],"33":["רַנְּנוּ צַדִּיקִים בַּיהֹוָה לַיְשָׁרִים נָאוָה תְהִלָּה:","הוֹדוּ לַיהֹוָה בְּכִנּוֹר בְּנֵבֶל עָשׂוֹר זַמְּרוּ־לוֹ:","שִׁירוּ לוֹ שִׁיר חָדָשׁ הֵיטִיבוּ נַגֵּן בִּתְרוּעָה:","כִּי־יָשָׁר דְּבַר־יְהֹוָה וְכָל־מַעֲשֵׂהוּ בֶּאֱמוּנָה:","אֹהֵב צְדָקָה וּמִשְׁפָּט חֶסֶד יְהֹוָה מָלְאָה הָאָרֶץ:","בִּדְבַר יְהֹוָה שָׁמַיִם נַעֲשׂוּ וּבְרוּחַ פִּיו כָּל־צְבָאָם:","כֹּנֵס כַּנֵּד מֵי הַיָּם נֹתֵן בְּאֹצָרוֹת תְּהוֹמוֹת:","יִירְאוּ מֵיהֹוָה כָּל־הָאָרֶץ מִמֶּנּוּ יָגוּרוּ כָּל־יֹשְׁבֵי תֵבֵל:","כִּי הוּא אָמַר וַיֶּהִי הוּא־צִוָּה וַיַּעֲמֹד:","יְהֹוָה הֵפִיר עֲצַת גּוֹיִם הֵנִיא מַחְשְׁבוֹת עַמִּים:","עֲצַת יְהֹוָה לְעוֹלָם תַּעֲמֹד מַחְשְׁבוֹת לִבּוֹ לְדֹר וָדֹר:","אַשְׁרֵי הַגּוֹי אֲשֶׁר־יְהֹוָה אֱלֹהָיו הָעָם | בָּחַר לְנַחֲלָה לוֹ:","מִשָּׁמַיִם הִבִּיט יְהֹוָה רָאָה אֶת־כָּל־בְּנֵי הָאָדָם:","מִמְּכוֹן־שִׁבְתּוֹ הִשְׁגִּיחַ אֶל כָּל־יֹשְׁבֵי הָאָרֶץ:","הַיֹּצֵר יַחַד לִבָּם הַמֵּבִין אֶל־כָּל־מַעֲשֵׂיהֶם:","אֵין הַמֶּלֶךְ נוֹשָׁע בְּרָב־חָיִל גִּבּוֹר לֹא־יִנָּצֵל בְּרָב־כֹּחַ:","שֶׁקֶר הַסּוּס לִתְשׁוּעָה וּבְרֹב חֵילוֹ לֹא יְמַלֵּט:","הִנֵּה עֵין יְהֹוָה אֶל־יְרֵאָיו לַמְיַחֲלִים לְחַסְדּוֹ:","לְהַצִּיל מִמָּוֶת נַפְשָׁם וּלְחַיּוֹתָם בָּרָעָב:","נַפְשֵׁנוּ חִכְּתָה לַיהֹוָה עֶזְרֵנוּ וּמָגִנֵּנוּ הוּא:","כִּי־בוֹ יִשְׂמַח לִבֵּנוּ כִּי בְשֵׁם קָדְשׁוֹ בָטָחְנוּ:","יְהִי־חַסְדְּךָ יְהֹוָה עָלֵינוּ כַּאֲשֶׁר יִחַלְנוּ לָךְ:"],"72":["לִשְׁלֹמֹה | אֱלֹהִים מִשְׁפָּטֶיךָ לְמֶלֶךְ תֵּן וְצִדְקָתְךָ לְבֶן־מֶלֶךְ:","יָדִין עַמְּךָ בְצֶדֶק וַעֲנִיֶּיךָ בְמִשְׁפָּט:","יִשְׂאוּ הָרִים שָׁלוֹם לָעָם וּגְבָעוֹת בִּצְדָקָה:","יִשְׁפֹּט | עֲנִיֵּי־עָם יוֹשִׁיעַ לִבְנֵי אֶבְיוֹן וִידַכֵּא עוֹשֵׁק:","יִירָאוּךָ עִם־שָׁמֶשׁ וְלִפְנֵי יָרֵחַ דּוֹר דּוֹרִים:","יֵרֵד כְּמָטָר עַל־גֵּז כִּרְבִיבִים זַרְזִיף אָרֶץ:","יִפְרַח בְּיָמָיו צַדִּיק וְרֹב שָׁלוֹם עַד־בְּלִי יָרֵחַ:","וְיֵרְדְּ מִיָּם עַד־יָם וּמִנָּהָר עַד־אַפְסֵי־אָרֶץ:","לְפָנָיו יִכְרְעוּ צִיִּים וְאֹיְבָיו עָפָר יְלַחֵכוּ:","מַלְכֵי תַרְשִׁישׁ וְאִיִּים מִנְחָה יָשִׁיבוּ מַלְכֵי שְׁבָא וּסְבָא אֶשְׁכָּר יַקְרִיבוּ:","וְיִשְׁתַּחֲווּ־לוֹ כָל־מְלָכִים כָּל־גּוֹיִם יַעַבְדוּהוּ:","כִּי־יַצִּיל אֶבְיוֹן מְשַׁוֵּעַ וְעָנִי וְאֵין־עֹזֵר לוֹ:","יָחֹס עַל־דַּל וְאֶבְיוֹן וְנַפְשׁוֹת אֶבְיוֹנִים יוֹשִׁיעַ:","מִתּוֹךְ וּמֵחָמָס יִגְאַל נַפְשָׁם וְיֵיקַר דָּמָם בְּעֵינָיו:","וִיחִי וְיִתֶּן־לוֹ מִזְּהַב שְׁבָא וְיִתְפַּלֵּל בַּעֲדוֹ תָמִיד כָּל־הַיּוֹם יְבָרֲכֶנְהוּ:","יְהִי פִסַּת־בַּר | בָּאָרֶץ בְּרֹאשׁ הָרִים יִרְעַשׁ כַּלְּבָנוֹן פִּרְיוֹ וְיָצִיצוּ מֵעִיר כְּעֵשֶׂב הָאָרֶץ:","יְהִי שְׁמוֹ | לְעוֹלָם לִפְנֵי שֶׁמֶשׁ יִנּוֹן<span class=\"instructional ksiv\"> (כתיב יִנֹּין) </span> שְׁמוֹ וְיִתְבָּרְכוּ בוֹ כָּל־גּוֹיִם יְאַשְּׁרֻהוּ:","בָּרוּךְ | יְהֹוָה אֱלֹהִים אֱלֹהֵי יִשְׂרָאֵל עֹשֵׂה נִפְלָאוֹת לְבַדּוֹ:","וּבָרוּךְ | שֵׁם כְּבוֹדוֹ לְעוֹלָם וְיִמָּלֵא כְבוֹדוֹ אֶת־כָּל־הָאָרֶץ אָמֵן | וְאָמֵן:","כָּלּוּ תְפִלּוֹת דָּוִד בֶּן־יִשָׁי:"],"91":["יֹשֵׁב בְּסֵתֶר עֶלְיוֹן בְּצֵל שַׁדַּי יִתְלוֹנָן:","אֹמַר לַיהֹוָה מַחְסִּי וּמְצוּדָתִי אֱלֹהַי אֶבְטַח־בּוֹ:","כִּי הוּא יַצִּילְךָ מִפַּח יָקוּשׁ מִדֶּבֶר הַוּוֹת:","בְּאֶבְרָתוֹ | יָסֶךְ לָךְ וְתַחַת כְּנָפָיו תֶּחְסֶּה צִנָּה וְסֹחֵרָה אֲמִתּוֹ:","לֹא־תִירָא מִפַּחַד לָיְלָה מֵחֵץ יָעוּף יוֹמָם:","מִדֶּבֶר בָּאֹפֶל יַהֲלֹךְ מִקֶּטֶב יָשׁוּד צָהֳרָיִם:","יִפֹּל מִצִּדְּךָ | אֶלֶף וּרְבָבָה מִימִינֶךָ אֵלֶיךָ לֹא יִגָּשׁ:","רַק בְּעֵינֶיךָ תַבִּיט וְשִׁלֻּמַת רְשָׁעִים תִּרְאֶה:","כִּי־אַתָּה יְהֹוָה מַחְסִּי עֶלְיוֹן שַׂמְתָּ מְעוֹנֶךָ:","לֹא־תְאֻנֶּה אֵלֶיךָ רָעָה וְנֶגַע לֹא־יִקְרַב בְּאָהֳלֶךָ:","כִּי מַלְאָכָיו יְצַוֶּה־לָּךְ לִשְׁמָרְךָ בְּכָל־דְּרָכֶיךָ:","עַל־כַּפַּיִם יִשָּׂאוּנְךָ פֶּן־תִּגֹּף בָּאֶבֶן רַגְלֶךָ:","עַל־שַׁחַל וָפֶתֶן תִּדְרֹךְ תִּרְמֹס כְּפִיר וְתַנִּין:","כִּי בִי חָשַׁק וַאֲפַלְּטֵהוּ אֲשַׂגְּבֵהוּ כִּי־יָדַע שְׁמִי:","יִקְרָאֵנִי | וְאֶעֱנֵהוּ עִמּוֹ־אָנֹכִי בְצָרָה אֲחַלְּצֵהוּ וַאֲכַבְּדֵהוּ:","אֹרֶךְ יָמִים אַשְׂבִּיעֵהוּ וְאַרְאֵהוּ בִּישׁוּעָתִי:"],"104":["בָּרְכִי נַפְשִׁי אֶת־יְהֹוָה יְהֹוָה אֱלֹהַי גָּדַלְתָּ מְּאֹד הוֹד וְהָדָר לָבָשְׁתָּ:","עֹטֶה אוֹר כַּשַּׂלְמָה נוֹטֶה שָׁמַיִם כַּיְרִיעָה:","הַמְקָרֶה בַמַּיִם עֲלִיּוֹתָיו הַשָּׂם־עָבִים רְכוּבוֹ הַמְהַלֵּךְ עַל־כַּנְפֵי־רוּחַ:","עֹשֶׂה מַלְאָכָיו רוּחוֹת מְשָׁרֲתָיו אֵשׁ לֹהֵט:","יָסַד אֶרֶץ עַל־מְכוֹנֶיהָ בַּל־תִּמּוֹט עוֹלָם וָעֶד:","תְּהוֹם כַּלְּבוּשׁ כִּסִּיתוֹ עַל־הָרִים יַעַמְדוּ מָיִם:","מִן־גַּעֲרָתְךָ יְנוּסוּן מִן־קוֹל רַעַמְךָ יֵחָפֵזוּן:","יַעֲלוּ הָרִים יֵרְדוּ בְקָעוֹת אֶל־מְקוֹם זֶה | יָסַדְתָּ לָהֶם:","גְּבוּל־שַׂמְתָּ בַּל־יַעֲבֹרוּן בַּל־יְשֻׁבוּן לְכַסּוֹת הָאָרֶץ:","הַמְשַׁלֵּחַ מַעְיָנִים בַּנְּחָלִים בֵּין הָרִים יְהַלֵּכוּן:","יַשְׁקוּ כָּל־חַיְתוֹ שָׂדָי יִשְׁבְּרוּ פְרָאִים צְמָאָם:","עֲלֵיהֶם עוֹף־הַשָּׁמַיִם יִשְׁכּוֹן מִבֵּין עֳפָאיִם יִתְּנוּ־קוֹל:","מַשְׁקֶה הָרִים מֵעֲלִיּוֹתָיו מִפְּרִי מַעֲשֶׂיךָ תִּשְׂבַּע הָאָרֶץ:","מַצְמִיחַ חָצִיר | לַבְּהֵמָה וְעֵשֶׂב לַעֲבֹדַת הָאָדָם לְהוֹצִיא לֶחֶם מִן־הָאָרֶץ:","וְיַיִן | יְשַׂמַּח לְבַב־אֱנוֹשׁ לְהַצְהִיל פָּנִים מִשָּׁמֶן וְלֶחֶם לְבַב־אֱנוֹשׁ יִסְעָד:","יִשְׂבְּעוּ עֲצֵי יְהֹוָה אַרְזֵי לְבָנוֹן אֲשֶׁר נָטָע:","אֲשֶׁר־שָׁם צִפֳּרִים יְקַנֵּנוּ חֲסִידָה בְּרוֹשִׁים בֵּיתָהּ:","הָרִים הַגְּבֹהִים לַיְּעֵלִים סְלָעִים מַחְסֶּה לַשְׁפַנִּים:","עָשָׂה יָרֵחַ לְמוֹעֲדִים שֶׁמֶשׁ יָדַע מְבוֹאוֹ:","תָּשֶׁת חֹשֶׁךְ וִיהִי לָיְלָה בּוֹ־תִרְמֹשׂ כָּל־חַיְתוֹ־יָעַר:","הַכְּפִירִים שֹׁאֲגִים לַטָּרֶף וּלְבַקֵּשׁ מֵאֵל אָכְלָם:","תִּזְרַח הַשֶּׁמֶשׁ יֵאָסֵפוּן וְאֶל־מְעוֹנֹתָם יִרְבָּצוּן:","יֵצֵא אָדָם לְפָעֳלוֹ וְלַעֲבֹדָתוֹ עֲדֵי־עָרֶב:","מָה־רַבּוּ מַעֲשֶׂיךָ | יְהֹוָה כֻּלָּם בְּחָכְמָה עָשִׂיתָ מָלְאָה הָאָרֶץ קִנְיָנֶךָ:","זֶה | הַיָּם גָּדוֹל וּרְחַב יָדָיִם שָׁם רֶמֶשׂ וְאֵין מִסְפָּר חַיּוֹת קְטַנּוֹת עִם־גְּדֹלוֹת:","שָׁם אֳנִיּוֹת יְהַלֵּכוּן לִוְיָתָן זֶה | יָצַרְתָּ לְשַׂחֶק־בּוֹ:","כֻּלָּם אֵלֶיךָ יְשַׂבֵּרוּן לָתֵת אָכְלָם בְּעִתּוֹ:","תִּתֵּן לָהֶם יִלְקֹטוּן תִּפְתַּח יָדְךָ יִשְׂבְּעוּן טוֹב:","תַּסְתִּיר פָּנֶיךָ יִבָּהֵלוּן תֹּסֵף רוּחָם יִגְוָעוּן וְאֶל־עֲפָרָם יְשׁוּבוּן:","תְּשַׁלַּח רוּחֲךָ יִבָּרֵאוּן וּתְחַדֵּשׁ פְּנֵי אֲדָמָה:","יְהִי כְבוֹד יְהֹוָה לְעוֹלָם יִשְׂמַח יְהֹוָה בְּמַעֲשָׂיו:","הַמַּבִּיט לָאָרֶץ וַתִּרְעָד יִגַּע בֶּהָרִים וְיֶעֱשָׁנוּ:","אָשִׁירָה לַיהֹוָה בְּחַיָּי אֲזַמְּרָה לֵאלֹהַי בְּעוֹדִי:","יֶעֱרַב עָלָיו שִׂיחִי אָנֹכִי אֶשְׂמַח בַּיהֹוָה:","יִתַּמּוּ חַטָּאִים | מִן־הָאָרֶץ וּרְשָׁעִים | עוֹד אֵינָם בָּרְכִי נַפְשִׁי אֶת־יְהֹוָה הַלְלוּיָהּ:"],"130":["שִׁיר הַמַּעֲלוֹת מִמַּעֲמַקִּים קְרָאתִיךָ יְהֹוָה:","אֲדֹנָי שִׁמְעָה בְקוֹלִי תִּהְיֶינָה אָזְנֶיךָ קַשֻּׁבוֹת לְקוֹל תַּחֲנוּנָי:","אִם־עֲו‍ֹנוֹת תִּשְׁמָר־יָהּ אֲדֹנָי מִי יַעֲמֹד:","כִּי־עִמְּךָ הַסְּלִיחָה לְמַעַן תִּוָּרֵא:","קִוִּיתִי יְהֹוָה קִוְּתָה נַפְשִׁי וְלִדְבָרוֹ הוֹחָלְתִּי:","נַפְשִׁי לַאדֹנָי מִשֹּׁמְרִים לַבֹּקֶר שֹׁמְרִים לַבֹּקֶר:","יַחֵל יִשְׂרָאֵל אֶל־יְהֹוָה כִּי־עִם־יְהֹוָה הַחֶסֶד וְהַרְבֵּה עִמּוֹ פְדוּת:","וְהוּא יִפְדֶּה אֶת־יִשְׂרָאֵל מִכֹּל עֲוֹנוֹתָיו:"]};
+const T119={"א":["אַשְׁרֵי תְמִימֵי־דָרֶךְ הַהֹלְכִים בְּתוֹרַת יְהֹוָה:","אַשְׁרֵי נֹצְרֵי עֵדֹתָיו בְּכָל־לֵב יִדְרְשׁוּהוּ:","אַף לֹא־פָעֲלוּ עַוְלָה בִּדְרָכָיו הָלָכוּ:","אַתָּה צִוִּיתָה פִקֻּדֶיךָ לִשְׁמֹר מְאֹד:","אַחֲלַי יִכֹּנוּ דְּרָכָי לִשְׁמֹר חֻקֶּיךָ:","אָז לֹא־אֵבוֹשׁ בְּהַבִּיטִי אֶל־כָּל־מִצְו‍ֹתֶיךָ:","אוֹדְךָ בְּיֹשֶׁר לֵבָב בְּלָמְדִי מִשְׁפְּטֵי צִדְקֶךָ:","אֶת־חֻקֶּיךָ אֶשְׁמֹר אַל־תַּעַזְבֵנִי עַד־מְאֹד:"],"ב":["בַּמֶּה יְזַכֶּה־נַּעַר אֶת־אָרְחוֹ לִשְׁמֹר כִּדְבָרֶךָ:","בְּכָל־לִבִּי דְרַשְׁתִּיךָ אַל־תַּשְׁגֵּנִי מִמִּצְו‍ֹתֶיךָ:","בְּלִבִּי צָפַנְתִּי אִמְרָתֶךָ לְמַעַן לֹא אֶחֱטָא־לָךְ:","בָּרוּךְ אַתָּה יְהֹוָה לַמְּדֵנִי חֻקֶּיךָ:","בִּשְׂפָתַי סִפַּרְתִּי כֹּל מִשְׁפְּטֵי־פִיךָ:","בְּדֶרֶךְ עֵדְו‍ֹתֶיךָ שַׂשְׂתִּי כְּעַל כָּל־הוֹן:","בְּפִקּוּדֶיךָ אָשִׂיחָה וְאַבִּיטָה אֹרְחֹתֶיךָ:","בְּחֻקֹּתֶיךָ אֶשְׁתַּעֲשָׁע לֹא אֶשְׁכַּח דְּבָרֶךָ:"],"ג":["גְּמֹל עַל־עַבְדְּךָ אֶחְיֶה וְאֶשְׁמְרָה דְבָרֶךָ:","גַּל־עֵינַי וְאַבִּיטָה נִפְלָאוֹת מִתּוֹרָתֶךָ:","גֵּר אָנֹכִי בָאָרֶץ אַל־תַּסְתֵּר מִמֶּנִּי מִצְו‍ֹתֶיךָ:","גָּרְסָה נַפְשִׁי לְתַאֲבָה אֶל־מִשְׁפָּטֶיךָ בְכָל־עֵת:","גָּעַרְתָּ זֵדִים אֲרוּרִים הַשֹּׁגִים מִמִּצְו‍ֹתֶיךָ:","גַּל מֵעָלַי חֶרְפָּה וָבוּז כִּי עֵדֹתֶיךָ נָצָרְתִּי:","גַּם יָשְׁבוּ שָׂרִים בִּי נִדְבָּרוּ עַבְדְּךָ יָשִׂיחַ בְּחֻקֶּיךָ:","גַּם־עֵדֹתֶיךָ שַׁעֲשֻׁעַי אַנְשֵׁי עֲצָתִי:"],"ד":["דָּבְקָה לֶעָפָר נַפְשִׁי חַיֵּנִי כִּדְבָרֶךָ:","דְּרָכַי סִפַּרְתִּי וַתַּעֲנֵנִי לַמְּדֵנִי חֻקֶּיךָ:","דֶּרֶךְ־פִּקּוּדֶיךָ הֲבִינֵנִי וְאָשִׂיחָה בְּנִפְלְאוֹתֶיךָ:","דָּלְפָה נַפְשִׁי מִתּוּגָה קַיְּמֵנִי כִּדְבָרֶךָ:","דֶּרֶךְ שֶׁקֶר הָסֵר מִמֶּנִּי וְתוֹרָתְךָ חָנֵּנִי:","דֶּרֶךְ־אֱמוּנָה בָחָרְתִּי מִשְׁפָּטֶיךָ שִׁוִּיתִי:","דָּבַקְתִּי בְעֵדְו‍ֹתֶיךָ יְהֹוָה אַל־תְּבִישֵׁנִי:","דֶּרֶךְ־מִצְו‍ֹתֶיךָ אָרוּץ כִּי תַרְחִיב לִבִּי:"],"ה":["הוֹרֵנִי יְהֹוָה דֶּרֶךְ חֻקֶּיךָ וְאֶצְּרֶנָּה עֵקֶב:","הֲבִינֵנִי וְאֶצְּרָה תוֹרָתֶךָ וְאֶשְׁמְרֶנָּה בְכָל־לֵב:","הַדְרִיכֵנִי בִּנְתִיב מִצְו‍ֹתֶיךָ כִּי בוֹ חָפָצְתִּי:","הַט־ לִבִּי אֶל־עֵדְו‍ֹתֶיךָ וְאַל אֶל־בָּצַע:","הַעֲבֵר עֵינַי מֵרְאוֹת שָׁוְא בִּדְרָכֶךָ חַיֵּנִי:","הָקֵם לְעַבְדְּךָ אִמְרָתֶךָ אֲשֶׁר לְיִרְאָתֶךָ:","הַעֲבֵר חֶרְפָּתִי אֲשֶׁר יָגֹרְתִּי כִּי מִשְׁפָּטֶיךָ טוֹבִים:","הִנֵּה תָּאַבְתִּי לְפִקֻּדֶיךָ בְּצִדְקָתְךָ חַיֵּנִי:"],"ו":["וִיבֹאֻנִי חֲסָדֶךָ יְהֹוָה תְּשׁוּעָתְךָ כְּאִמְרָתֶךָ:","וְאֶעֱנֶה חֹרְפִי דָבָר כִּי־בָטַחְתִּי בִּדְבָרֶךָ:","וְאַל־תַּצֵּל מִפִּי דְבַר־אֱמֶת עַד־מְאֹד כִּי לְמִשְׁפָּטֶךָ יִחָלְתִּי:","וְאֶשְׁמְרָה תוֹרָתְךָ תָמִיד לְעוֹלָם וָעֶד:","וְאֶתְהַלְּכָה בָרְחָבָה כִּי פִקֻּדֶיךָ דָרָשְׁתִּי:","וַאֲדַבְּרָה בְעֵדֹתֶיךָ נֶגֶד מְלָכִים וְלֹא אֵבוֹשׁ:","וְאֶשְׁתַּעֲשַׁע בְּמִצְו‍ֹתֶיךָ אֲשֶׁר אָהָבְתִּי:","וְאֶשָּׂא כַפַּי אֶל־מִצְו‍ֹתֶיךָ אֲשֶׁר אָהָבְתִּי וְאָשִׂיחָה בְחֻקֶּיךָ:"],"ז":["זְכָר־דָּבָר לְעַבְדֶּךָ עַל אֲשֶׁר יִחַלְתָּנִי:","זֹאת נֶחָמָתִי בְעָנְיִי כִּי אִמְרָתְךָ חִיָּתְנִי:","זֵדִים הֱלִיצֻנִי עַד־מְאֹד מִתּוֹרָתְךָ לֹא נָטִיתִי:","זָכַרְתִּי מִשְׁפָּטֶיךָ מֵעוֹלָם | יְהֹוָה וָאֶתְנֶחָם:","זַלְעָפָה אֲחָזַתְנִי מֵרְשָׁעִים עֹזְבֵי תּוֹרָתֶךָ:","זְמִרוֹת הָיוּ־לִי חֻקֶּיךָ בְּבֵית מְגוּרָי:","זָכַרְתִּי בַלַּיְלָה שִׁמְךָ יְהֹוָה וָאֶשְׁמְרָה תּוֹרָתֶךָ:","זֹאת הָיְתָה־לִּי כִּי פִקֻּדֶיךָ נָצָרְתִּי:"],"ח":["חֶלְקִי יְהֹוָה אָמַרְתִּי לִשְׁמֹר דְּבָרֶיךָ:","חִלִּיתִי פָנֶיךָ בְכָל־לֵב חָנֵּנִי כְּאִמְרָתֶךָ:","חִשַּׁבְתִּי דְרָכָי וָאָשִׁיבָה רַגְלַי אֶל־עֵדֹתֶיךָ:","חַשְׁתִּי וְלֹא הִתְמַהְמָהְתִּי לִשְׁמֹר מִצְו‍ֹתֶיךָ:","חֶבְלֵי רְשָׁעִים עִוְּדֻנִי תּוֹרָתְךָ לֹא שָׁכָחְתִּי:","חֲצוֹת לַיְלָה אָקוּם לְהוֹדוֹת לָךְ עַל מִשְׁפְּטֵי צִדְקֶךָ:","חָבֵר אָנִי לְכָל־אֲשֶׁר יְרֵאוּךָ וּלְשֹׁמְרֵי פִּקּוּדֶיךָ:","חַסְדְּךָ יְהֹוָה מָלְאָה הָאָרֶץ חֻקֶּיךָ לַמְּדֵנִי:"],"ט":["טוֹב עָשִׂיתָ עִם־עַבְדְּךָ יְהֹוָה כִּדְבָרֶךָ:","טוּב טַעַם וָדַעַת לַמְּדֵנִי כִּי בְמִצְו‍ֹתֶיךָ הֶאֱמָנְתִּי:","טֶרֶם אֶעֱנֶה אֲנִי שֹׁגֵג וְעַתָּה אִמְרָתְךָ שָׁמָרְתִּי:","טוֹב אַתָּה וּמֵטִיב לַמְּדֵנִי חֻקֶּיךָ:","טָפְלוּ עָלַי שֶׁקֶר זֵדִים אֲנִי בְּכָל־לֵב | אֶצֹּר פִּקּוּדֶיךָ:","טָפַשׁ כַּחֵלֶב לִבָּם אֲנִי תּוֹרָתְךָ שִׁעֲשָׁעְתִּי:","טוֹב־לִי כִי־עֻנֵּיתִי לְמַעַן אֶלְמַד חֻקֶּיךָ:","טוֹב לִי תּוֹרַת פִּיךָ מֵאַלְפֵי זָהָב וָכָסֶף:"],"י":["יָדֶיךָ עָשׂוּנִי וַיְכוֹנְנוּנִי הֲבִינֵנִי וְאֶלְמְדָה מִצְו‍ֹתֶיךָ:","יְרֵאֶיךָ יִרְאוּנִי וְיִשְׂמָחוּ כִּי לִדְבָרְךָ יִחָלְתִּי:","יָדַעְתִּי יְהֹוָה כִּי־צֶדֶק מִשְׁפָּטֶיךָ וֶאֱמוּנָה עִנִּיתָנִי:","יְהִי־נָא חַסְדְּךָ לְנַחֲמֵנִי כְּאִמְרָתְךָ לְעַבְדֶּךָ:","יְבֹאוּנִי רַחֲמֶיךָ וְאֶחְיֶה כִּי תוֹרָתְךָ שַׁעֲשֻׁעָי:","יֵבֹשׁוּ זֵדִים כִּי־שֶׁקֶר עִוְּתוּנִי אֲנִי אָשִׂיחַ בְּפִקּוּדֶיךָ:","יָשׁוּבוּ־לִי יְרֵאֶיךָ וְיֹדְעֵי<span class=\"instructional ksiv\"> (כתיב וְיֹדְעֵו) </span> עֵדֹתֶיךָ:","יְהִי־לִבִּי תָמִים בְּחֻקֶּיךָ לְמַעַן לֹא אֵבוֹשׁ:"],"כ":["כָּלְתָה לִתְשׁוּעָתְךָ נַפְשִׁי לִדְבָרְךָ יִחָלְתִּי:","כָּלוּ עֵינַי לְאִמְרָתֶךָ לֵאמֹר מָתַי תְּנַחֲמֵנִי:","כִּי־הָיִיתִי כְּנֹאד בְּקִיטוֹר חֻקֶּיךָ לֹא שָׁכָחְתִּי:","כַּמָּה יְמֵי עַבְדֶּךָ מָתַי תַּעֲשֶׂה בְרֹדְפַי מִשְׁפָּט:","כָּרוּ־לִי זֵדִים שִׁיחוֹת אֲשֶׁר לֹא כְתוֹרָתֶךָ:","כָּל־מִצְו‍ֹתֶיךָ אֱמוּנָה שֶׁקֶר רְדָפוּנִי עָזְרֵנִי:","כִּמְעַט כִּלּוּנִי בָאָרֶץ וַאֲנִי לֹא־עָזַבְתִּי פִקֻּדֶיךָ:","כְּחַסְדְּךָ חַיֵּנִי וְאֶשְׁמְרָה עֵדוּת פִּיךָ:"],"ל":["לְעוֹלָם יְהֹוָה דְּבָרְךָ נִצָּב בַּשָּׁמָיִם:","לְדֹר וָדֹר אֱמוּנָתֶךָ כּוֹנַנְתָּ אֶרֶץ וַתַּעֲמֹד:","לְמִשְׁפָּטֶיךָ עָמְדוּ הַיּוֹם כִּי הַכֹּל עֲבָדֶיךָ:","לוּלֵי תוֹרָתְךָ שַׁעֲשֻׁעָי אָז אָבַדְתִּי בְעָנְיִי:","לְעוֹלָם לֹא־אֶשְׁכַּח פִּקּוּדֶיךָ כִּי־בָם חִיִּיתָנִי:","לְךָ־אֲנִי הוֹשִׁיעֵנִי כִּי פִקּוּדֶיךָ דָרָשְׁתִּי:","לִי קִוּוּ רְשָׁעִים לְאַבְּדֵנִי עֵדֹתֶיךָ אֶתְבּוֹנָן:","לְכָל תִּכְלָה רָאִיתִי קֵץ רְחָבָה מִצְוָתְךָ מְאֹד:"],"מ":["מָה־אָהַבְתִּי תוֹרָתֶךָ כָּל־הַיּוֹם הִיא שִׂיחָתִי:","מֵאֹיְבַי תְּחַכְּמֵנִי מִצְו‍ֹתֶךָ כִּי לְעוֹלָם הִיא־לִי:","מִכָּל־מְלַמְּדַי הִשְׂכַּלְתִּי כִּי עֵדְו‍ֹתֶיךָ שִׂיחָה לִי:","מִזְּקֵנִים אֶתְבּוֹנָן כִּי פִקּוּדֶיךָ נָצָרְתִּי:","מִכָּל־אֹרַח רָע כָּלִאתִי רַגְלָי לְמַעַן אֶשְׁמֹר דְּבָרֶךָ:","מִמִּשְׁפָּטֶיךָ לֹא־סָרְתִּי כִּי אַתָּה הוֹרֵתָנִי:","מַה־נִּמְלְצוּ לְחִכִּי אִמְרָתֶךָ מִדְּבַשׁ לְפִי:","מִפִּקּוּדֶיךָ אֶתְבּוֹנָן עַל־כֵּן שָׂנֵאתִי | כָּל־אֹרַח שָׁקֶר:"],"נ":["נֵר־לְרַגְלִי דְבָרֶךָ וְאוֹר לִנְתִיבָתִי:","נִשְׁבַּעְתִּי וָאֲקַיֵּמָה לִשְׁמֹר מִשְׁפְּטֵי צִדְקֶךָ:","נַעֲנֵיתִי עַד־מְאֹד יְהֹוָה חַיֵּנִי כִדְבָרֶךָ:","נִדְבוֹת פִּי רְצֵה־נָא יְהֹוָה וּמִשְׁפָּטֶיךָ לַמְּדֵנִי:","נַפְשִׁי בְכַפִּי תָמִיד וְתוֹרָתְךָ לֹא שָׁכָחְתִּי:","נָתְנוּ רְשָׁעִים פַּח לִי וּמִפִּקּוּדֶיךָ לֹא תָעִיתִי:","נָחַלְתִּי עֵדְו‍ֹתֶיךָ לְעוֹלָם כִּי־שְׂשׂוֹן לִבִּי הֵמָּה:","נָטִיתִי לִבִּי לַעֲשׂוֹת חֻקֶּיךָ לְעוֹלָם עֵקֶב:"],"ס":["סֵעֲפִים שָׂנֵאתִי וְתוֹרָתְךָ אָהָבְתִּי:","סִתְרִי וּמָגִנִּי אָתָּה לִדְבָרְךָ יִחָלְתִּי:","סוּרוּ מִמֶּנִּי מְרֵעִים וְאֶצְּרָה מִצְו‍ֹת אֱלֹהָי:","סָמְכֵנִי כְאִמְרָתְךָ וְאֶחְיֶה וְאַל־תְּבִישֵׁנִי מִשִּׂבְרִי:","סְעָדֵנִי וְאִוָּשֵׁעָה וְאֶשְׁעָה בְחֻקֶּיךָ תָמִיד:","סָלִיתָ כָּל־שֹׁגִים מֵחֻקֶּיךָ כִּי־שֶׁקֶר תַּרְמִיתָם:","סִגִים הִשְׁבַּתָּ כָל־רִשְׁעֵי־אָרֶץ לָכֵן אָהַבְתִּי עֵדֹתֶיךָ:","סָמַר מִפַּחְדְּךָ בְשָׂרִי וּמִמִּשְׁפָּטֶיךָ יָרֵאתִי:"],"ע":["עָשִׂיתִי מִשְׁפָּט וָצֶדֶק בַּל־תַּנִּיחֵנִי לְעֹשְׁקָי:","עֲרֹב עַבְדְּךָ לְטוֹב אַל־יַעַשְׁקֻנִי זֵדִים:","עֵינַי כָּלוּ לִישׁוּעָתֶךָ וּלְאִמְרַת צִדְקֶךָ:","עֲשֵׂה עִם־עַבְדְּךָ כְחַסְדֶּךָ וְחֻקֶּיךָ לַמְּדֵנִי:","עַבְדְּךָ־אָנִי הֲבִינֵנִי וְאֵדְעָה עֵדֹתֶיךָ:","עֵת לַעֲשׂוֹת לַיהֹוָה הֵפֵרוּ תּוֹרָתֶךָ:","עַל־כֵּן אָהַבְתִּי מִצְו‍ֹתֶיךָ מִזָּהָב וּמִפָּז:","עַל־כֵּן | כָּל־פִּקּוּדֵי כֹל יִשָּׁרְתִּי כָּל־אֹרַח שֶׁקֶר שָׂנֵאתִי:"],"פ":["פְּלָאוֹת עֵדְו‍ֹתֶיךָ עַל־כֵּן נְצָרָתַם נַפְשִׁי:","פֵּתַח דְּבָרֶיךָ יָאִיר מֵבִין פְּתָיִים:","פִּי פָעַרְתִּי וָאֶשְׁאָפָה כִּי לְמִצְו‍ֹתֶיךָ יָאָבְתִּי:","פְּנֵה־אֵלַי וְחָנֵּנִי כְּמִשְׁפָּט לְאֹהֲבֵי שְׁמֶךָ:","פְּעָמַי הָכֵן בְּאִמְרָתֶךָ וְאַל־תַּשְׁלֶט־בִּי כָל־אָוֶן:","פְּדֵנִי מֵעֹשֶׁק אָדָם וְאֶשְׁמְרָה פִּקּוּדֶיךָ:","פָּנֶיךָ הָאֵר בְּעַבְדֶּךָ וְלַמְּדֵנִי אֶת־חֻקֶּיךָ:","פַּלְגֵי־ מַיִם יָרְדוּ עֵינָי עַל לֹא־שָׁמְרוּ תוֹרָתֶךָ:"],"צ":["צַדִּיק אַתָּה יְהֹוָה וְיָשָׁר מִשְׁפָּטֶיךָ:","צִוִּיתָ צֶדֶק עֵדֹתֶיךָ וֶאֱמוּנָה מְאֹד:","צִמְּתַתְנִי קִנְאָתִי כִּי־שָׁכְחוּ דְבָרֶיךָ צָרָי:","צְרוּפָה אִמְרָתְךָ מְאֹד וְעַבְדְּךָ אֲהֵבָהּ:","צָעִיר אָנֹכִי וְנִבְזֶה פִּקֻּדֶיךָ לֹא שָׁכָחְתִּי:","צִדְקָתְךָ צֶדֶק לְעוֹלָם וְתוֹרָתְךָ אֱמֶת:","צַר־וּמָצוֹק מְצָאוּנִי מִצְו‍ֹתֶיךָ שַׁעֲשֻׁעָי:","צֶדֶק עֵדְו‍ֹתֶיךָ לְעוֹלָם הֲבִינֵנִי וְאֶחְיֶה:"],"ק":["קָרָאתִי בְכָל־לֵב עֲנֵנִי יְהֹוָה חֻקֶּיךָ אֶצֹּרָה:","קְרָאתִיךָ הוֹשִׁיעֵנִי וְאֶשְׁמְרָה עֵדֹתֶיךָ:","קִדַּמְתִּי בַנֶּשֶׁף וָאֲשַׁוֵּעָה לִדְבָרְךָ<span class=\"instructional ksiv\"> (כתיב לִדְבָרְיךָ) </span> יִחָלְתִּי:","קִדְּמוּ עֵינַי אַשְׁמֻרוֹת לָשִׂיחַ בְּאִמְרָתֶךָ:","קוֹלִי שִׁמְעָה כְּחַסְדֶּךָ יְהֹוָה כְּמִשְׁפָּטֶךָ חַיֵּנִי:","קָרְבוּ רֹדְפֵי זִמָּה מִתּוֹרָתְךָ רָחָקוּ:","קָרוֹב אַתָּה יְהֹוָה וְכָל־מִצְו‍ֹתֶיךָ אֱמֶת:","קֶדֶם יָדַעְתִּי מֵעֵדֹתֶיךָ כִּי לְעוֹלָם יְסַדְתָּם:"],"ר":["רְאֵה־עָנְיִי וְחַלְּצֵנִי כִּי־תוֹרָתְךָ לֹא שָׁכָחְתִּי:","רִיבָה רִיבִי וּגְאָלֵנִי לְאִמְרָתְךָ חַיֵּנִי:","רָחוֹק מֵרְשָׁעִים יְשׁוּעָה כִּי־חֻקֶּיךָ לֹא דָרָשׁוּ:","רַחֲמֶיךָ רַבִּים | יְהֹוָה כְּמִשְׁפָּטֶיךָ חַיֵּנִי:","רַבִּים רֹדְפַי וְצָרָי מֵעֵדְו‍ֹתֶיךָ לֹא נָטִיתִי:","רָאִיתִי בֹגְדִים וָאֶתְקוֹטָטָה אֲשֶׁר אִמְרָתְךָ לֹא שָׁמָרוּ:","רְאֵה כִּי־פִקּוּדֶיךָ אָהָבְתִּי יְהֹוָה כְּחַסְדְּךָ חַיֵּנִי:","רֹאשׁ־דְּבָרְךָ אֱמֶת וּלְעוֹלָם כָּל־מִשְׁפַּט צִדְקֶךָ:"],"ש":["שָׂרִים רְדָפוּנִי חִנָּם וּמִדְּבָרְךָ<span class=\"instructional ksiv\"> (כתיב וּמִדְּבָרְיךָ) </span> פָּחַד לִבִּי:","שָׂשׂ אָנֹכִי עַל־אִמְרָתֶךָ כְּמוֹצֵא שָׁלָל רָב:","שֶׁקֶר שָׂנֵאתִי וָאֲתַעֵבָה תּוֹרָתְךָ אָהָבְתִּי:","שֶׁבַע בַּיּוֹם הִלַּלְתִּיךָ עַל מִשְׁפְּטֵי צִדְקֶךָ:","שָׁלוֹם רָב לְאֹהֲבֵי תוֹרָתֶךָ וְאֵין לָמוֹ מִכְשׁוֹל:","שִׂבַּרְתִּי לִישׁוּעָתְךָ יְהֹוָה וּמִצְו‍ֹתֶיךָ עָשִׂיתִי:","שָׁמְרָה נַפְשִׁי עֵדֹתֶיךָ וָאֹהֲבֵם מְאֹד:","שָׁמַרְתִּי פִקּוּדֶיךָ וְעֵדֹתֶיךָ כִּי כָל־דְּרָכַי נֶגְדֶּךָ:"],"ת":["תִּקְרַב רִנָּתִי לְפָנֶיךָ יְהֹוָה כִּדְבָרְךָ הֲבִינֵנִי:","תָּבוֹא תְחִנָּתִי לְפָנֶיךָ כְּאִמְרָתְךָ הַצִּילֵנִי:","תַּבַּעְנָה שְׂפָתַי תְּהִלָּה כִּי תְלַמְּדֵנִי חֻקֶּיךָ:","תַּעַן־לְשׁוֹנִי אִמְרָתֶךָ כִּי כָל־מִצְו‍ֹתֶיךָ צֶּדֶק:","תְּהִי־יָדְךָ לְעָזְרֵנִי כִּי פִקּוּדֶיךָ בָחָרְתִּי:","תָּאַבְתִּי לִישׁוּעָתְךָ יְהֹוָה וְתוֹרָתְךָ שַׁעֲשֻׁעָי:","תְּחִי־נַפְשִׁי וּתְהַלְלֶךָּ וּמִשְׁפָּטֶךָ יַעְזְּרֻנִי:","תָּעִיתִי כְּשֶׂה אֹבֵד בַּקֵּשׁ עַבְדֶּךָ כִּי מִצְו‍ֹתֶיךָ לֹא שָׁכָחְתִּי:"]};
+
+/* ===== Hebrew calendar engine (Dershowitz–Reingold) =====
+   Months: Nisan=1..Elul=6, Tishrei=7..Shevat=11, Adar/AdarI=12, AdarII=13 */
+const HebCal = (() => {
+  const leap = (y) => ((7 * y + 1) % 19) < 7;
+  const monthsInYear = (y) => (leap(y) ? 13 : 12);
+  function elapsedDays(y) {
+    const me = 235 * Math.floor((y - 1) / 19) + 12 * ((y - 1) % 19) + Math.floor((7 * ((y - 1) % 19) + 1) / 19);
+    const pe = 204 + 793 * (me % 1080);
+    const he = 5 + 12 * me + 793 * Math.floor(me / 1080) + Math.floor(pe / 1080);
+    let day = 1 + 29 * me + Math.floor(he / 24);
+    const parts = (he % 24) * 1080 + (pe % 1080);
+    if (parts >= 19440 || (day % 7 === 2 && parts >= 9924 && !leap(y)) || (day % 7 === 1 && parts >= 16789 && leap(y - 1))) day += 1;
+    if ([0, 3, 5].includes(day % 7)) day += 1;
+    return day;
+  }
+  const daysInYear = (y) => elapsedDays(y + 1) - elapsedDays(y);
+  const longCheshvan = (y) => daysInYear(y) % 10 === 5;
+  const shortKislev = (y) => daysInYear(y) % 10 === 3;
+  function daysInMonth(m, y) {
+    if (m === 2 || m === 4 || m === 6 || (m === 8 && !longCheshvan(y)) || (m === 9 && shortKislev(y)) || m === 10 || (m === 12 && !leap(y)) || m === 13) return 29;
+    return 30;
+  }
+  const EPOCH = -1373429;
+  function hebrewToAbs(year, month, day) {
+    let d = day;
+    if (month < 7) {
+      for (let m = 7; m <= monthsInYear(year); m++) d += daysInMonth(m, year);
+      for (let m = 1; m < month; m++) d += daysInMonth(m, year);
+    } else {
+      for (let m = 7; m < month; m++) d += daysInMonth(m, year);
+    }
+    return d + elapsedDays(year) + EPOCH;
+  }
+  function absToHebrew(abs) {
+    let year = Math.floor((abs - EPOCH) / 366) + 1;
+    while (abs >= hebrewToAbs(year + 1, 7, 1)) year++;
+    let month = abs < hebrewToAbs(year, 1, 1) ? 7 : 1;
+    while (abs > hebrewToAbs(year, month, daysInMonth(month, year))) month++;
+    return { year, month, day: abs - hebrewToAbs(year, month, 1) + 1 };
+  }
+  const gLeap = (y) => (y % 4 === 0 && y % 100 !== 0) || y % 400 === 0;
+  const GL = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+  function gregToAbs(y, m, d) {
+    let n = d;
+    for (let i = 0; i < m - 1; i++) n += GL[i];
+    if (m > 2 && gLeap(y)) n += 1;
+    const p = y - 1;
+    return n + 365 * p + Math.floor(p / 4) - Math.floor(p / 100) + Math.floor(p / 400);
+  }
+  function absToGreg(abs) {
+    let y = Math.floor(abs / 366) + 1;
+    while (abs >= gregToAbs(y + 1, 1, 1)) y++;
+    let m = 1;
+    while (abs > gregToAbs(y, m, GL[m - 1] + (m === 2 && gLeap(y) ? 1 : 0))) m++;
+    return { year: y, month: m, day: abs - gregToAbs(y, m, 1) + 1 };
+  }
+  const MN = {1:"Nisan",2:"Iyar",3:"Sivan",4:"Tammuz",5:"Av",6:"Elul",7:"Tishrei",8:"Cheshvan",9:"Kislev",10:"Teves",11:"Shevat"};
+  const MNH = {1:"ניסן",2:"אייר",3:"סיון",4:"תמוז",5:"אב",6:"אלול",7:"תשרי",8:"חשון",9:"כסלו",10:"טבת",11:"שבט"};
+  const monthName = (m, y) => m === 12 ? (leap(y) ? "Adar I" : "Adar") : m === 13 ? "Adar II" : MN[m];
+  const monthNameHe = (m, y) => m === 12 ? (leap(y) ? "אדר א׳" : "אדר") : m === 13 ? "אדר ב׳" : MNH[m];
+  function yahrzeit(hyear, death) {
+    if (hyear <= death.year) return null;
+    let month = death.month, day = death.day, special = null;
+    if (death.month === 13) {
+      month = monthsInYear(hyear) === 13 ? 13 : 12;
+      if (month === 12) special = "The passing was in Adar II; in a non-leap year the yahrzeit is kept in the single Adar.";
+    } else if (death.month === 12 && leap(death.year) && monthsInYear(hyear) === 13) {
+      special = "The passing was in Adar I; in leap years it is kept in Adar I.";
+    } else if (death.month === 12 && !leap(death.year) && monthsInYear(hyear) === 13) {
+      special = "The passing was in a plain Adar; in leap years the Rema keeps Adar I (prevalent Ashkenazi custom; the Shulchan Aruch — Adar II; some keep both. SA & Rema OC 568:7 — ask your rav).";
+    }
+    if (death.month === 12 && death.day === 30 && !leap(hyear)) {
+      month = 11; day = 30;
+      special = "The passing was on 30 Adar I; in a non-leap year (no 30 Adar) the yahrzeit is kept on 30 Shevat.";
+    } else if (death.month === 8 && death.day === 30 && !longCheshvan(hyear)) {
+      day = 29;
+      special = "The passing was on 30 Cheshvan; this year Cheshvan has 29 days, so the yahrzeit is kept on 29 Cheshvan (the day before 1 Kislev).";
+    } else if (death.month === 9 && death.day === 30 && shortKislev(hyear)) {
+      day = 29;
+      special = "The passing was on 30 Kislev; this year Kislev has 29 days, so the yahrzeit is kept on 29 Kislev (the day before 1 Teves).";
+    }
+    return { year: hyear, month, day, special };
+  }
+  return { leap, monthsInYear, daysInMonth, hebrewToAbs, absToHebrew, gregToAbs, absToGreg, monthName, monthNameHe, yahrzeit };
+})();
+
+/* ===== Hebrew numerals ===== */
+function gematriya(n) {
+  const ones = ["","א","ב","ג","ד","ה","ו","ז","ח","ט"];
+  const tens = ["","י","כ","ל","מ","נ","ס","ע","פ","צ"];
+  const hund = ["","ק","ר","ש","ת"];
+  let s = "", v = n;
+  if (v >= 1000) { s += ones[Math.floor(v / 1000)] + "׳"; v %= 1000; }
+  while (v >= 400) { s += "ת"; v -= 400; }
+  s += hund[Math.floor(v / 100)]; v %= 100;
+  if (v === 15) s += "טו"; else if (v === 16) s += "טז";
+  else { s += tens[Math.floor(v / 10)]; s += ones[v % 10]; }
+  if (s.length > 1) s = s.slice(0, -1) + "״" + s.slice(-1); else s += "׳";
+  return s;
+}
+const WEEKDAYS = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Shabbos"];
+const GMONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+function fmtGreg(g, abs) { return WEEKDAYS[((abs % 7) + 7) % 7] + ", " + GMONTHS[g.month - 1] + " " + g.day + ", " + g.year; }
+function fmtHeb(h) { return h.day + " " + HebCal.monthName(h.month, h.year) + " " + h.year; }
+function smoothScrollTo(el, opts) { if (el && typeof el.scrollIntoView === "function") el.scrollIntoView(opts); }
+function todayAbsFn() { const t = new Date(); return HebCal.gregToAbs(t.getFullYear(), t.getMonth() + 1, t.getDate()); }
+function escapeHtml(s) { return s.replace(/[&<>"']/g, (c) => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])); }
+
+/* ===== Router ===== */
+const VIEWS = ["home","guide","calculator","day","year","kever","tefillos","tehillim","name","tzedakah","reference"];
+function route() {
+  const h = location.hash || "#/home";
+  const parts = h.replace(/^#\/?/, "").split("/");
+  const view = VIEWS.includes(parts[0]) ? parts[0] : "home";
+  const anchor = parts[1];
+  document.querySelectorAll("main > section.view").forEach((s) => s.classList.toggle("on", s.dataset.view === view));
+  document.body.dataset.view = view;
+  document.querySelectorAll("#navtabs a.tab").forEach((a) => a.classList.toggle("active", a.getAttribute("href") === "#/" + view));
+  if (anchor) {
+    const el = document.getElementById(anchor);
+    if (el) setTimeout(() => smoothScrollTo(el, { behavior: "smooth", block: "start" }), 60);
+  } else {
+    window.scrollTo({ top: 0 });
+  }
+}
+window.addEventListener("hashchange", route);
+
+/* ===== Home widget ===== */
+function renderHomeNext() {
+  const el = document.getElementById("homeNext");
+  const list = loadSaved();
+  if (!list.length) { el.innerHTML = ""; return; }
+  const todayAbs = todayAbsFn();
+  const curHYear = HebCal.absToHebrew(todayAbs).year;
+  let best = null;
+  list.forEach((item) => {
+    let yz = HebCal.yahrzeit(curHYear, item.heb);
+    let abs = yz ? HebCal.hebrewToAbs(yz.year, yz.month, yz.day) : -1;
+    if (!yz || abs < todayAbs) { yz = HebCal.yahrzeit(curHYear + 1, item.heb); abs = HebCal.hebrewToAbs(yz.year, yz.month, yz.day); }
+    if (!best || abs < best.abs) best = { item, yz, abs };
+  });
+  const days = best.abs - todayAbs;
+  const g = HebCal.absToGreg(best.abs);
+  el.innerHTML = '<div class="next-widget"><div><div class="kicker" style="color:var(--gold-soft)">Next yahrzeit</div>' +
+    '<div style="font-size:1.15rem"><strong>' + escapeHtml(best.item.name) + "</strong> — " + fmtHeb(best.yz) + "</div>" +
+    '<div style="font-size:.9rem;color:#ccd4e6">' + fmtGreg(g, best.abs) + ' · candle at sunset the evening before · <a href="#/calculator">all saved dates</a></div></div>' +
+    '<div class="big-days">' + (days === 0 ? "today" : days + (days === 1 ? " day" : " days")) + "</div></div>";
+}
+
+/* ===== Calculator ===== */
+let mode = "greg";
+function setMode(m) {
+  mode = m;
+  document.getElementById("modeGreg").classList.toggle("active", m === "greg");
+  document.getElementById("modeHeb").classList.toggle("active", m === "heb");
+  document.getElementById("gregInputs").style.display = m === "greg" ? "" : "none";
+  document.getElementById("hebInputs").style.display = m === "heb" ? "" : "none";
+}
+function populateHebInputs() {
+  const dSel = document.getElementById("hday"), mSel = document.getElementById("hmonth");
+  for (let d = 1; d <= 30; d++) dSel.add(new Option(d, d));
+  const order = [7, 8, 9, 10, 11, 12, 13, 1, 2, 3, 4, 5, 6];
+  const names = {7:"Tishrei",8:"Cheshvan",9:"Kislev",10:"Teves",11:"Shevat",12:"Adar / Adar I",13:"Adar II (leap years)",1:"Nisan",2:"Iyar",3:"Sivan",4:"Tammuz",5:"Av",6:"Elul"};
+  order.forEach((m) => mSel.add(new Option(names[m], m)));
+}
+function getDeathHebrew() {
+  if (mode === "greg") {
+    const v = document.getElementById("gdate").value;
+    if (!v) { alert("Please enter the date of passing."); return null; }
+    const [y, m, d] = v.split("-").map(Number);
+    let abs = HebCal.gregToAbs(y, m, d);
+    if (document.getElementById("afterSunset").checked) abs += 1;
+    return { heb: HebCal.absToHebrew(abs), abs };
+  }
+  const hy = parseInt(document.getElementById("hyear").value, 10);
+  const hm = parseInt(document.getElementById("hmonth").value, 10);
+  const hd = parseInt(document.getElementById("hday").value, 10);
+  if (!hy || hy < 4000 || hy > 6500) { alert("Please enter a valid Hebrew year (e.g., 5780)."); return null; }
+  if (hm === 13 && !HebCal.leap(hy)) { alert("Hebrew year " + hy + " is not a leap year, so it has no Adar II. Choose Adar."); return null; }
+  if (hd > HebCal.daysInMonth(hm, hy)) { alert(HebCal.monthName(hm, hy) + " " + hy + " has only " + HebCal.daysInMonth(hm, hy) + " days."); return null; }
+  return { heb: { year: hy, month: hm, day: hd }, abs: HebCal.hebrewToAbs(hy, hm, hd) };
+}
+function calculate() {
+  const death = getDeathHebrew();
+  if (!death) return;
+  const h = death.heb;
+  const todayAbs = todayAbsFn();
+  const curHYear = HebCal.absToHebrew(todayAbs).year;
+  const name = document.getElementById("pname").value.trim();
+  const delayed = document.getElementById("delayedBurial").checked;
+
+  let html = '<div class="hdate-banner">';
+  if (name) html += '<div style="font-size:1.05rem;margin-bottom:.3rem">L’ilui nishmas <strong>' + escapeHtml(name) + "</strong></div>";
+  html += '<div class="big">Hebrew date of passing: <strong>' + fmtHeb(h) + "</strong></div>";
+  html += '<span class="he">' + gematriya(h.day) + " " + HebCal.monthNameHe(h.month, h.year) + " " + gematriya(h.year) + "</span>";
+  html += '<div class="muted">Civil date: ' + fmtGreg(HebCal.absToGreg(death.abs), death.abs) + "</div></div>";
+
+  if (delayed) html += '<div class="note"><strong>Delayed burial:</strong> many poskim keep the <em>first</em> yahrzeit on the Hebrew anniversary of the <em>burial</em>, and later years on the date of passing shown here (see Gesher HaChaim 32). Please confirm the first-year date with your rav.</div>';
+
+  const startYear = Math.max(h.year + 1, curHYear);
+  let rows = "", specials = new Set(), markedNext = false;
+  for (let hy = startYear; hy < startYear + 20; hy++) {
+    const yz = HebCal.yahrzeit(hy, h);
+    if (!yz) continue;
+    const abs = HebCal.hebrewToAbs(yz.year, yz.month, yz.day);
+    if (abs < todayAbs && hy === startYear) continue;
+    const g = HebCal.absToGreg(abs);
+    const evG = HebCal.absToGreg(abs - 1);
+    const isNext = !markedNext && abs >= todayAbs;
+    if (isNext) markedNext = true;
+    if (yz.special) specials.add(yz.special);
+    rows += '<tr class="' + (isNext ? "next-yz" : "") + '"><td>' + fmtHeb(yz) + (yz.special ? ' <span class="special-flag">*</span>' : "") + "</td><td>" + fmtGreg(g, abs) + "</td><td>" + GMONTHS[evG.month - 1] + " " + evG.day + ", " + evG.year + "</td>" + (isNext ? "<td>← next</td>" : "<td></td>") + "</tr>";
+  }
+  html += '<table class="yz"><thead><tr><th>Hebrew date</th><th>Civil date of yahrzeit</th><th>Light candle at sunset on</th><th></th></tr></thead><tbody>' + rows + "</tbody></table>";
+  specials.forEach((s) => { html += '<p class="special-flag">* ' + s + "</p>"; });
+  html += '<p class="muted">The yahrzeit begins at sunset the evening before and ends at nightfall of the date shown. For cases marked *, minhagim vary — confirm with your rav.</p>';
+  html += '<div style="margin-top:.8rem" class="no-print"><button type="button" onclick="saveYahrzeit()">★ Save to My Yahrzeits</button></div>';
+  document.getElementById("result").innerHTML = html;
+  window._lastCalc = { name: name || "Unnamed", heb: h };
+  smoothScrollTo(document.getElementById("result"), { behavior: "smooth", block: "nearest" });
+}
+
+/* ===== Saved yahrzeits (this browser only) ===== */
+function loadSaved() { try { return JSON.parse(localStorage.getItem("nerzikaron") || "[]"); } catch (e) { return []; } }
+function storeSaved(list) { try { localStorage.setItem("nerzikaron", JSON.stringify(list)); } catch (e) {} }
+function saveYahrzeit() {
+  if (!window._lastCalc) return;
+  const list = loadSaved(); list.push(window._lastCalc); storeSaved(list); renderSaved(); renderHomeNext();
+}
+function renderSaved() {
+  const list = loadSaved();
+  const box = document.getElementById("savedBox");
+  if (!list.length) { box.style.display = "none"; return; }
+  box.style.display = "";
+  const todayAbs = todayAbsFn();
+  const curHYear = HebCal.absToHebrew(todayAbs).year;
+  let html = "";
+  list.forEach((item, i) => {
+    let yz = HebCal.yahrzeit(curHYear, item.heb);
+    let abs = yz ? HebCal.hebrewToAbs(yz.year, yz.month, yz.day) : -1;
+    if (!yz || abs < todayAbs) { yz = HebCal.yahrzeit(curHYear + 1, item.heb); abs = HebCal.hebrewToAbs(yz.year, yz.month, yz.day); }
+    const days = abs - todayAbs;
+    const g = HebCal.absToGreg(abs);
+    html += '<div class="saved-item"><div><strong>' + escapeHtml(item.name) + "</strong> — " + fmtHeb(item.heb) + '<br><span class="muted">Next yahrzeit: ' + fmtHeb(yz) + " · " + fmtGreg(g, abs) + " · " + (days === 0 ? "<strong>today</strong>" : "in " + days + " day" + (days === 1 ? "" : "s")) + '</span></div><button type="button" onclick="removeSaved(' + i + ')">Remove</button></div>';
+  });
+  document.getElementById("savedList").innerHTML = html;
+}
+function removeSaved(i) { const list = loadSaved(); list.splice(i, 1); storeSaved(list); renderSaved(); renderHomeNext(); }
+
+/* ===== Tehillim rendering ===== */
+const PSALM_META = [
+  [33, "Said first at the kever — a call to the righteous to praise Hashem, Whose word created all."],
+  [16, "Michtam l'David — trust that Hashem will not abandon the neshama to the grave."],
+  [17, "A plea of the upright: “I shall behold Your face in righteousness.”"],
+  [72, "Of Shlomo — the flourishing of the righteous, and blessing from generation to generation."],
+  [91, "“Whoever sits in the shelter of the Most High” — the psalm of protection, said at every levayah."],
+  [104, "Borchi Nafshi — the neshama blesses Hashem for the wonders of creation."],
+  [130, "Shir Hamaalos Mimaamakim — out of the depths I call You; the psalm of hope and forgiveness."],
+  [23, "Mizmor l'David — “Hashem is my Shepherd”; comfort in the valley of the shadow."]
+];
+function renderPsalms() {
+  let html = "";
+  for (const [num, why] of PSALM_META) {
+    const verses = TEHILLIM[num];
+    html += '<details class="psalm" id="psalm-' + num + '"><summary><span>Tehillim ' + num + '</span><span class="he">תהלים ' + gematriya(num) + "</span></summary>";
+    html += '<div class="why">' + why + "</div><div class=\"verses\">";
+    verses.forEach((v, i) => { html += '<p><span class="vn">' + gematriya(i + 1) + "</span>" + v + "</p>"; });
+    html += "</div></details>";
+  }
+  document.getElementById("psalmList").innerHTML = html;
+}
+function toggleAllPsalms(open) {
+  document.querySelectorAll("#psalmList details").forEach((d) => { d.open = open; });
+}
+
+/* ===== Name → Tehillim 119 ===== */
+const ALEF_BEIS = ["א","ב","ג","ד","ה","ו","ז","ח","ט","י","כ","ל","מ","נ","ס","ע","פ","צ","ק","ר","ש","ת"];
+const FINALS = {"ך":"כ","ם":"מ","ן":"נ","ף":"פ","ץ":"צ"};
+const LETTER_NAMES = {"א":"Alef","ב":"Beis","ג":"Gimmel","ד":"Daled","ה":"Hei","ו":"Vav","ז":"Zayin","ח":"Ches","ט":"Tes","י":"Yud","כ":"Kaf","ל":"Lamed","מ":"Mem","נ":"Nun","ס":"Samech","ע":"Ayin","פ":"Pei","צ":"Tzadi","ק":"Kuf","ר":"Reish","ש":"Shin","ת":"Tav"};
+let nameLetters = [];
+function renderKeypad() {
+  const kp = document.getElementById("keypad");
+  let html = "";
+  ALEF_BEIS.concat(Object.keys(FINALS)).forEach((L) => {
+    html += '<button type="button" onclick="nameAdd(\'' + L + '\')">' + L + "</button>";
+  });
+  kp.innerHTML = html;
+}
+function nameAdd(L) { nameLetters.push(L); renderNameDisplay(); }
+function nameBackspace() { nameLetters.pop(); renderNameDisplay(); }
+function nameClear() { nameLetters = []; renderNameDisplay(); document.getElementById("nameStanzas").innerHTML = ""; }
+function renderNameDisplay() {
+  document.getElementById("nameDisplay").innerHTML = nameLetters.length ? nameLetters.join("") : "&nbsp;";
+}
+function stanzaBlock(L, label) {
+  const base = FINALS[L] || L;
+  const verses = T119[base];
+  if (!verses) return "";
+  let html = '<div class="stanza"><h4><span class="big-letter">' + base + "</span> <span>" + (LETTER_NAMES[base] || "") + (label ? ' <span class="muted">· ' + label + "</span>" : "") + "</span></h4>";
+  verses.forEach((v, i) => { html += '<p><span class="vn">' + gematriya(ALEF_BEIS.indexOf(base) * 8 + i + 1) + "</span>" + v + "</p>"; });
+  return html + "</div>";
+}
+function buildNameTehillim() {
+  if (!nameLetters.length) { alert("Tap the letters of the Hebrew name first."); return; }
+  let html = '<h3 style="margin-top:1.4rem">Tehillim 119 for <span class="he" style="font-size:1.4rem">' + nameLetters.join("") + "</span></h3>";
+  html += '<p class="muted">Say each stanza in order — eight pesukim per letter of the name — then the four stanzas of <span class="he">נשמה</span>.</p>';
+  nameLetters.forEach((L) => { html += stanzaBlock(L, "for the name"); });
+  html += '<div class="ornament" style="margin:1.2rem 0 .4rem">✦</div><p class="muted" style="text-align:center">The letters of <span class="he">נשמה</span> — neshama:</p>';
+  ["נ","ש","מ","ה"].forEach((L) => { html += stanzaBlock(L, "of נשמה"); });
+  document.getElementById("nameStanzas").innerHTML = html;
+  smoothScrollTo(document.getElementById("nameStanzas"), { behavior: "smooth", block: "start" });
+}
+function printNameTehillim() {
+  if (!document.getElementById("nameStanzas").innerHTML) buildNameTehillim();
+  if (!document.getElementById("nameStanzas").innerHTML) return;
+  document.body.classList.add("print-name");
+  const cleanup = () => { document.body.classList.remove("print-name"); window.removeEventListener("afterprint", cleanup); };
+  window.addEventListener("afterprint", cleanup);
+  window.print();
+  setTimeout(cleanup, 2000);
+}
+
+/* ===== Back-to-top ===== */
+window.addEventListener("scroll", () => {
+  const bt = document.getElementById("backTop");
+  if (bt) bt.style.display = window.scrollY > 900 ? "block" : "none";
+}, { passive: true });
+
+populateHebInputs();
+renderSaved();
+renderPsalms();
+renderKeypad();
+renderHomeNext();
+route();
+</script>
+</body>
+</html>
