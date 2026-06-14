@@ -1,0 +1,65 @@
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Frank+Ruhl+Libre:wght@400;500;700&display=swap');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --ember: #f5b942;
+  --ember-soft: #f6c96b;
+}
+
+html, body { background: #0a0a0f; color: #f4efe6; }
+body { font-family: 'Cormorant Garamond', Georgia, serif; -webkit-font-smoothing: antialiased; }
+
+.he { font-family: 'Frank Ruhl Libre', serif; direction: rtl; }
+
+/* Soft ambient star/dust field for the dark sections */
+.nightfield {
+  background:
+    radial-gradient(1200px 800px at 50% -10%, rgba(245,185,66,0.10), transparent 60%),
+    radial-gradient(900px 600px at 80% 110%, rgba(245,185,66,0.05), transparent 60%),
+    #0a0a0f;
+}
+
+/* The candle flame */
+.flame {
+  transform-origin: 50% 90%;
+  animation: flicker 2.6s ease-in-out infinite;
+  filter: drop-shadow(0 0 14px rgba(245,185,66,0.85)) drop-shadow(0 0 40px rgba(245,150,40,0.45));
+}
+.flame-inner { animation: flicker2 1.7s ease-in-out infinite; transform-origin: 50% 90%; }
+.glow {
+  animation: glowpulse 3.4s ease-in-out infinite;
+}
+
+@keyframes flicker {
+  0%,100% { transform: scaleY(1) scaleX(1) rotate(-0.5deg); opacity: .95; }
+  25% { transform: scaleY(1.06) scaleX(0.97) rotate(0.8deg); opacity: 1; }
+  50% { transform: scaleY(0.97) scaleX(1.02) rotate(-0.6deg); opacity: .9; }
+  75% { transform: scaleY(1.04) scaleX(0.98) rotate(0.4deg); opacity: 1; }
+}
+@keyframes flicker2 {
+  0%,100% { transform: scaleY(1) translateY(0); }
+  50% { transform: scaleY(1.12) translateY(-1px); }
+}
+@keyframes glowpulse {
+  0%,100% { opacity: .55; transform: scale(1); }
+  50% { opacity: .85; transform: scale(1.08); }
+}
+
+/* gentle rising sparks */
+.spark { animation: rise linear infinite; opacity: 0; }
+@keyframes rise {
+  0% { transform: translateY(0) scale(1); opacity: 0; }
+  15% { opacity: .9; }
+  100% { transform: translateY(-120px) scale(0.3); opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .flame, .flame-inner, .glow, .spark { animation: none !important; }
+}
+
+::selection { background: rgba(245,185,66,0.3); }
+
+/* thin gold rule */
+.goldrule { height:1px; background:linear-gradient(90deg,transparent,rgba(245,185,66,.5),transparent); }
